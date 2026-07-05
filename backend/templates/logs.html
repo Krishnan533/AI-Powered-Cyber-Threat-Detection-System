@@ -1,0 +1,370 @@
+{% extends "base.html" %}
+
+{% block title %}Logs & Diagnostics - AI Threat Monitor{% endblock %}
+{% block header_title %}Operations Audits Desk{% endblock %}
+
+{% block content %}
+<div class="card bg-dark-slate border border-slate rounded-3 p-4">
+    <!-- Log Category Navigation Tabs -->
+    <ul class="nav nav-tabs border-slate mb-4 font-mono" id="logTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="audit-tab" data-bs-toggle="tab" data-bs-target="#audit-pane" type="button" role="tab" aria-controls="audit-pane" aria-selected="true">
+                <i class="fa-solid fa-clipboard-user me-2"></i> Audit Logs
+            </button>
+        </li>
+        {% if role == 'Admin' %}
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="system-tab" data-bs-toggle="tab" data-bs-target="#system-pane" type="button" role="tab" aria-controls="system-pane" aria-selected="false">
+                <i class="fa-solid fa-bug me-2"></i> System Diagnostics
+            </button>
+        </li>
+        {% endif %}
+    </ul>
+
+    <!-- Tabs Content Panes -->
+    <div class="tab-content" id="logTabContent">
+        <!-- Audit Logs Pane -->
+        <div class="tab-pane fade show active" id="audit-pane" role="tabpanel" aria-labelledby="audit-tab" tabindex="0">
+            <!-- Search filters -->
+            <div class="row g-3 align-items-end mb-4">
+                <div class="col-12 col-md-4">
+                    <label for="auditSearch" class="form-label text-grey font-mono text-uppercase" style="font-size: 0.7rem;">Keyword Search</label>
+                    <div class="input-group border border-slate rounded bg-darker-slate overflow-hidden">
+                        <span class="input-group-text border-0 bg-transparent text-grey"><i class="fa-solid fa-magnifying-glass"></i></span>
+                        <input type="text" class="form-control border-0 bg-transparent text-white font-mono" id="auditSearch" placeholder="Search logs payload...">
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-3">
+                    <label for="auditActionFilter" class="form-label text-grey font-mono text-uppercase" style="font-size: 0.7rem;">Action Type</label>
+                    <select class="form-select border border-slate bg-darker-slate text-white font-mono" id="auditActionFilter">
+                        <option value="">ALL ACTIONS</option>
+                    </select>
+                </div>
+                <div class="col-12 col-md-3 d-flex gap-2">
+                    <button class="btn btn-outline-cyan btn-sm font-weight-bold" id="btnAuditFilterApply">Apply</button>
+                    <button class="btn btn-outline-secondary btn-sm font-weight-bold" id="btnAuditFilterClear">Clear</button>
+                </div>
+            </div>
+
+            <!-- Audit Logs Table -->
+            <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle border-0 m-0" id="auditLogsTable">
+                    <thead>
+                        <tr class="font-mono text-grey border-bottom border-slate" style="font-size: 0.75rem;">
+                            <th>Timestamp (UTC)</th>
+                            <th>Action Type</th>
+                            <th>Operator</th>
+                            <th>Host IP</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody class="font-mono" style="font-size: 0.8rem;">
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-grey">Loading audit logs...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginator -->
+            <div class="d-flex justify-content-between align-items-center border-top border-slate pt-3 mt-3">
+                <div class="text-grey font-mono" style="font-size: 0.7rem;">
+                    Page <span id="auditCurrentPage">1</span> of <span id="auditTotalPages">1</span>
+                </div>
+                <nav aria-label="Audit navigation">
+                    <ul class="pagination pagination-sm m-0" id="auditPagination">
+                        <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+                        <li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+        <!-- System Diagnostics Pane (Admin Only) -->
+        {% if role == 'Admin' %}
+        <div class="tab-pane fade" id="system-pane" role="tabpanel" aria-labelledby="system-tab" tabindex="0">
+            <!-- Search filters -->
+            <div class="row g-3 align-items-end mb-4">
+                <div class="col-12 col-md-4">
+                    <label for="systemSearch" class="form-label text-grey font-mono text-uppercase" style="font-size: 0.7rem;">Keyword Search</label>
+                    <div class="input-group border border-slate rounded bg-darker-slate overflow-hidden">
+                        <span class="input-group-text border-0 bg-transparent text-grey"><i class="fa-solid fa-magnifying-glass"></i></span>
+                        <input type="text" class="form-control border-0 bg-transparent text-white font-mono" id="systemSearch" placeholder="Search system message...">
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-3">
+                    <label for="systemLevelFilter" class="form-label text-grey font-mono text-uppercase" style="font-size: 0.7rem;">Log Severity</label>
+                    <select class="form-select border border-slate bg-darker-slate text-white font-mono" id="systemLevelFilter">
+                        <option value="">ALL LEVELS</option>
+                        <option value="INFO">INFO</option>
+                        <option value="WARNING">WARNING</option>
+                        <option value="ERROR">ERROR</option>
+                    </select>
+                </div>
+                <div class="col-12 col-md-3 d-flex gap-2">
+                    <button class="btn btn-outline-cyan btn-sm font-weight-bold" id="btnSystemFilterApply">Apply</button>
+                    <button class="btn btn-outline-secondary btn-sm font-weight-bold" id="btnSystemFilterClear">Clear</button>
+                </div>
+            </div>
+
+            <!-- System logs table -->
+            <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle border-0 m-0" id="systemLogsTable">
+                    <thead>
+                        <tr class="font-mono text-grey border-bottom border-slate" style="font-size: 0.75rem;">
+                            <th>Timestamp (UTC)</th>
+                            <th>Severity Level</th>
+                            <th>Diagnostic Message</th>
+                        </tr>
+                    </thead>
+                    <tbody class="font-mono" style="font-size: 0.8rem;">
+                        <tr>
+                            <td colspan="3" class="text-center py-5 text-grey">Loading system diagnostics...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginator -->
+            <div class="d-flex justify-content-between align-items-center border-top border-slate pt-3 mt-3">
+                <div class="text-grey font-mono" style="font-size: 0.7rem;">
+                    Page <span id="systemCurrentPage">1</span> of <span id="systemTotalPages">1</span>
+                </div>
+                <nav aria-label="System navigation">
+                    <ul class="pagination pagination-sm m-0" id="systemPagination">
+                        <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+                        <li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        let auditPage = 1;
+        let systemPage = 1;
+        const limit = 15;
+
+        // UI triggers - Audit
+        const auditTable = document.querySelector("#auditLogsTable tbody");
+        const auditSearch = document.getElementById("auditSearch");
+        const auditActionFilter = document.getElementById("auditActionFilter");
+        const btnAuditApply = document.getElementById("btnAuditFilterApply");
+        const btnAuditClear = document.getElementById("btnAuditFilterClear");
+        const auditCurrentSpan = document.getElementById("auditCurrentPage");
+        const auditTotalSpan = document.getElementById("auditTotalPages");
+        const auditPagination = document.getElementById("auditPagination");
+
+        // UI triggers - System
+        const systemTable = document.querySelector("#systemLogsTable tbody");
+        const systemSearch = document.getElementById("systemSearch");
+        const systemLevelFilter = document.getElementById("systemLevelFilter");
+        const btnSystemApply = document.getElementById("btnSystemFilterApply");
+        const btnSystemClear = document.getElementById("btnSystemFilterClear");
+        const systemCurrentSpan = document.getElementById("systemCurrentPage");
+        const systemTotalSpan = document.getElementById("systemTotalPages");
+        const systemPagination = document.getElementById("systemPagination");
+
+        // Audit Logs loading
+        async function loadAuditLogs() {
+            auditTable.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-grey"><i class="fa-solid fa-spinner fa-spin me-2"></i> Loading audit trails...</td></tr>`;
+            try {
+                const params = new URLSearchParams({
+                    page: auditPage,
+                    limit: limit,
+                    search: auditSearch.value.trim(),
+                    action: auditActionFilter.value
+                });
+
+                const response = await fetch(`/api/logs/audit?${params.toString()}`);
+                if (!response.ok) throw new Error("Failed to load audit logs");
+                
+                const data = await response.json();
+                renderAuditLogs(data);
+                renderAuditPagination(data);
+                populateAuditActions(data.actions);
+            } catch (err) {
+                console.error(err);
+                auditTable.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-neon-red">Error querying audit logs.</td></tr>`;
+            }
+        }
+
+        function renderAuditLogs(data) {
+            auditCurrentSpan.textContent = data.current_page;
+            auditTotalSpan.textContent = data.pages || 1;
+
+            if (data.audit_logs.length === 0) {
+                auditTable.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-grey">No audit events found.</td></tr>`;
+                return;
+            }
+
+            auditTable.innerHTML = "";
+            data.audit_logs.forEach(log => {
+                const time = new Date(log.timestamp).toISOString().replace('T', ' ').substring(0, 19);
+                let badge = "bg-secondary";
+                if (log.action.includes("SUCCESS")) badge = "bg-neon-green text-dark";
+                else if (log.action.includes("FAILURE")) badge = "bg-neon-red text-dark";
+                else if (log.action.includes("BLOCKED")) badge = "bg-neon-purple text-dark";
+
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${time}</td>
+                    <td><span class="badge ${badge}">${log.action}</span></td>
+                    <td class="text-white">${log.username}</td>
+                    <td class="text-neon-cyan">${log.ip_address || 'System'}</td>
+                    <td class="text-grey" style="font-size: 0.75rem;">${log.details || ''}</td>
+                `;
+                auditTable.appendChild(row);
+            });
+        }
+
+        function populateAuditActions(actions) {
+            // Populate selector if it is empty except for the default option
+            if (auditActionFilter.options.length > 1) return;
+            actions.forEach(act => {
+                const opt = document.createElement("option");
+                opt.value = act;
+                opt.textContent = act;
+                auditActionFilter.appendChild(opt);
+            });
+        }
+
+        function renderAuditPagination(data) {
+            auditPagination.innerHTML = "";
+            const prev = document.createElement("li");
+            prev.className = `page-item ${data.current_page === 1 ? 'disabled' : ''}`;
+            prev.innerHTML = `<a class="page-link" href="#" data-page="${data.current_page - 1}">Previous</a>`;
+            auditPagination.appendChild(prev);
+
+            const next = document.createElement("li");
+            next.className = `page-item ${data.current_page === data.pages || data.pages === 0 ? 'disabled' : ''}`;
+            next.innerHTML = `<a class="page-link" href="#" data-page="${data.current_page + 1}">Next</a>`;
+            auditPagination.appendChild(next);
+
+            auditPagination.querySelectorAll("a").forEach(a => {
+                a.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    const page = parseInt(a.getAttribute("data-page"));
+                    if (page && page !== auditPage) {
+                        auditPage = page;
+                        loadAuditLogs();
+                    }
+                });
+            });
+        }
+
+        btnAuditApply.addEventListener("click", () => {
+            auditPage = 1;
+            loadAuditLogs();
+        });
+
+        btnAuditClear.addEventListener("click", () => {
+            auditSearch.value = "";
+            auditActionFilter.value = "";
+            auditPage = 1;
+            loadAuditLogs();
+        });
+
+        // Initialize Audit
+        loadAuditLogs();
+
+        // System diagnostics log loader
+        {% if role == 'Admin' %}
+        async function loadSystemLogs() {
+            systemTable.innerHTML = `<tr><td colspan="3" class="text-center py-4 text-grey"><i class="fa-solid fa-spinner fa-spin me-2"></i> Loading system diagnostics...</td></tr>`;
+            try {
+                const params = new URLSearchParams({
+                    page: systemPage,
+                    limit: limit,
+                    search: systemSearch.value.trim(),
+                    level: systemLevelFilter.value
+                });
+
+                const response = await fetch(`/api/logs/system?${params.toString()}`);
+                if (!response.ok) throw new Error("Failed to load system logs");
+                
+                const data = await response.json();
+                renderSystemLogs(data);
+                renderSystemPagination(data);
+            } catch (err) {
+                console.error(err);
+                systemTable.innerHTML = `<tr><td colspan="3" class="text-center py-4 text-neon-red">Error querying system logs.</td></tr>`;
+            }
+        }
+
+        function renderSystemLogs(data) {
+            systemCurrentSpan.textContent = data.current_page;
+            systemTotalSpan.textContent = data.pages || 1;
+
+            if (data.system_logs.length === 0) {
+                systemTable.innerHTML = `<tr><td colspan="3" class="text-center py-4 text-grey">No system diagnostics found.</td></tr>`;
+                return;
+            }
+
+            systemTable.innerHTML = "";
+            data.system_logs.forEach(log => {
+                const time = new Date(log.timestamp).toISOString().replace('T', ' ').substring(0, 19);
+                let levelBadge = "bg-secondary";
+                if (log.level === "ERROR") levelBadge = "bg-neon-red text-dark";
+                else if (log.level === "WARNING") levelBadge = "bg-neon-amber text-dark";
+                else if (log.level === "INFO") levelBadge = "bg-neon-cyan text-dark";
+
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${time}</td>
+                    <td><span class="badge ${levelBadge}">${log.level}</span></td>
+                    <td class="text-grey" style="font-size: 0.75rem;">${log.message}</td>
+                `;
+                systemTable.appendChild(row);
+            });
+        }
+
+        function renderSystemPagination(data) {
+            systemPagination.innerHTML = "";
+            const prev = document.createElement("li");
+            prev.className = `page-item ${data.current_page === 1 ? 'disabled' : ''}`;
+            prev.innerHTML = `<a class="page-link" href="#" data-page="${data.current_page - 1}">Previous</a>`;
+            systemPagination.appendChild(prev);
+
+            const next = document.createElement("li");
+            next.className = `page-item ${data.current_page === data.pages || data.pages === 0 ? 'disabled' : ''}`;
+            next.innerHTML = `<a class="page-link" href="#" data-page="${data.current_page + 1}">Next</a>`;
+            systemPagination.appendChild(next);
+
+            systemPagination.querySelectorAll("a").forEach(a => {
+                a.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    const page = parseInt(a.getAttribute("data-page"));
+                    if (page && page !== systemPage) {
+                        systemPage = page;
+                        loadSystemLogs();
+                    }
+                });
+            });
+        }
+
+        btnSystemApply.addEventListener("click", () => {
+            systemPage = 1;
+            loadSystemLogs();
+        });
+
+        btnSystemClear.addEventListener("click", () => {
+            systemSearch.value = "";
+            systemLevelFilter.value = "";
+            systemPage = 1;
+            loadSystemLogs();
+        });
+
+        // Load system logs on tab click
+        document.getElementById("system-tab").addEventListener("click", () => {
+            loadSystemLogs();
+        });
+        {% endif %}
+    });
+</script>
+{% endblock %}

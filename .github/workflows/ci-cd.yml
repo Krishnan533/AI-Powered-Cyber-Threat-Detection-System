@@ -1,0 +1,57 @@
+name: AI Cyber Threat Sniffer CI/CD
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: rootpassword
+          MYSQL_DATABASE: network_monitor
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v5
+      with:
+        python-level: '3.12'
+        cache: 'pip'
+
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y tcpdump libpcap-dev
+
+    - name: Install python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Set up Database Schema
+      run: |
+        mysql -h 127.0.0.1 -u root -prootpassword < database/schema.sql
+        mysql -h 127.0.0.1 -u root -prootpassword < database/seed.sql
+
+    - name: Train AI Anomaly Model
+      run: |
+        python ai_model/train.py
+
+    - name: Run Pytest
+      env:
+        DATABASE_URL: mysql+pymysql://root:rootpassword@127.0.0.1:3306/network_monitor
+        SECRET_KEY: test_secret_key_running_on_ci_cd_pipelines
+        SNIFFER_SIMULATION: TRUE
+      run: |
+        pytest

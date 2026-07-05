@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - AI Threat Monitor{% endblock %}
+{% block header_title %}Operations Command Center{% endblock %}
+
+{% block head %}
+<!-- Plotly CDN for interactive graphics -->
+<script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<!-- Grid 1: Statistic Telemetry Cards -->
+<div class="row g-4 mb-4">
+    <!-- Total Packets Card -->
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card stat-card bg-dark-slate border border-slate p-3 rounded-3 d-flex flex-row align-items-center justify-content-between">
+            <div>
+                <span class="text-grey font-mono text-uppercase" style="font-size: 0.75rem;">Total Packets Sniffed</span>
+                <h2 class="m-0 text-white font-weight-bold font-mono mt-1" id="statTotalPackets">0</h2>
+                <small class="text-neon-cyan font-mono" style="font-size: 0.7rem;"><i class="fa-solid fa-bolt"></i> <span id="statPacketsHour">0</span> last hr</small>
+            </div>
+            <div class="stat-icon bg-neon-cyan-transparent text-neon-cyan d-flex align-items-center justify-content-center rounded-3" style="width: 50px; height: 50px;">
+                <i class="fa-solid fa-network-wired fa-xl"></i>
+            </div>
+        </div>
+    </div>
+    <!-- Active Threats Card -->
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card stat-card bg-dark-slate border border-slate p-3 rounded-3 d-flex flex-row align-items-center justify-content-between">
+            <div>
+                <span class="text-grey font-mono text-uppercase" style="font-size: 0.75rem;">Active Threats</span>
+                <h2 class="m-0 text-neon-red font-weight-bold font-mono mt-1" id="statActiveThreats">0</h2>
+                <small class="text-neon-red font-mono" style="font-size: 0.7rem;"><i class="fa-solid fa-skull-crossbones"></i> Requires Action</small>
+            </div>
+            <div class="stat-icon bg-neon-red-transparent text-neon-red d-flex align-items-center justify-content-center rounded-3" style="width: 50px; height: 50px;">
+                <i class="fa-solid fa-triangle-exclamation fa-xl"></i>
+            </div>
+        </div>
+    </div>
+    <!-- Blocked IPs Card -->
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card stat-card bg-dark-slate border border-slate p-3 rounded-3 d-flex flex-row align-items-center justify-content-between">
+            <div>
+                <span class="text-grey font-mono text-uppercase" style="font-size: 0.75rem;">Blocked IP rules</span>
+                <h2 class="m-0 text-neon-purple font-weight-bold font-mono mt-1" id="statBlockedIPs">0</h2>
+                <small class="text-neon-purple font-mono" style="font-size: 0.7rem;"><i class="fa-solid fa-ban"></i> Mitigating Attacks</small>
+            </div>
+            <div class="stat-icon bg-neon-purple-transparent text-neon-purple d-flex align-items-center justify-content-center rounded-3" style="width: 50px; height: 50px;">
+                <i class="fa-solid fa-user-slash fa-xl"></i>
+            </div>
+        </div>
+    </div>
+    <!-- AI Flagged Anomalies Card -->
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card stat-card bg-dark-slate border border-slate p-3 rounded-3 d-flex flex-row align-items-center justify-content-between">
+            <div>
+                <span class="text-grey font-mono text-uppercase" style="font-size: 0.75rem;">AI Anomaly Alerts</span>
+                <h2 class="m-0 text-neon-green font-weight-bold font-mono mt-1" id="statAiAnomalies">0</h2>
+                <small class="text-neon-green font-mono" style="font-size: 0.7rem;"><i class="fa-solid fa-brain"></i> Isolation Forest Active</small>
+            </div>
+            <div class="stat-icon bg-neon-green-transparent text-neon-green d-flex align-items-center justify-content-center rounded-3" style="width: 50px; height: 50px;">
+                <i class="fa-solid fa-brain fa-xl"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Grid 2: Interactive Charts -->
+<div class="row g-4 mb-4">
+    <!-- Chart: Realtime Traffic Timeline -->
+    <div class="col-12 col-xl-8">
+        <div class="card bg-dark-slate border border-slate rounded-3 p-4">
+            <h5 class="text-white font-weight-bold border-bottom border-slate pb-3 mb-3 d-flex align-items-center gap-2">
+                <i class="fa-regular fa-clock text-neon-cyan"></i> Network Security Timeline <small class="text-grey font-mono ms-2">(6hr window)</small>
+            </h5>
+            <div id="chartTimeline" style="height: 320px; width: 100%;">
+                <div class="d-flex align-items-center justify-content-center h-100 text-grey font-mono">
+                    <i class="fa-solid fa-spinner fa-spin me-2"></i> Plotting timeline matrix...
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Chart: Protocol Distribution -->
+    <div class="col-12 col-xl-4">
+        <div class="card bg-dark-slate border border-slate rounded-3 p-4">
+            <h5 class="text-white font-weight-bold border-bottom border-slate pb-3 mb-3 d-flex align-items-center gap-2">
+                <i class="fa-solid fa-chart-pie text-neon-purple"></i> Protocol Breakdown
+            </h5>
+            <div id="chartProtocol" style="height: 320px; width: 100%;">
+                <div class="d-flex align-items-center justify-content-center h-100 text-grey font-mono">
+                    <i class="fa-solid fa-spinner fa-spin me-2"></i> Computing protocol distribution...
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Grid 3: Threat Levels & Admin Control Panel -->
+<div class="row g-4 mb-4">
+    <!-- Chart: Threat Levels -->
+    <div class="col-12 col-md-6 col-xl-6">
+        <div class="card bg-dark-slate border border-slate rounded-3 p-4">
+            <h5 class="text-white font-weight-bold border-bottom border-slate pb-3 mb-3 d-flex align-items-center gap-2">
+                <i class="fa-solid fa-chart-simple text-neon-red"></i> Threat Severity Metrics
+            </h5>
+            <div id="chartSeverity" style="height: 250px; width: 100%;">
+                <div class="d-flex align-items-center justify-content-center h-100 text-grey font-mono">
+                    <i class="fa-solid fa-spinner fa-spin me-2"></i> Compiling severity metric...
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- AI Training and Control Desk -->
+    <div class="col-12 col-md-6 col-xl-6">
+        <div class="card bg-dark-slate border border-slate rounded-3 p-4 h-100 d-flex flex-column">
+            <h5 class="text-white font-weight-bold border-bottom border-slate pb-3 mb-3 d-flex align-items-center gap-2">
+                <i class="fa-solid fa-sliders text-neon-green"></i> AI Model Operations Desk
+            </h5>
+            <div class="flex-grow-1 d-flex flex-column justify-content-center py-2">
+                <div class="d-flex align-items-start gap-3 border border-slate p-3 rounded bg-darker-slate mb-3">
+                    <div class="bg-neon-green-transparent text-neon-green p-2.5 rounded text-center">
+                        <i class="fa-solid fa-microchip fa-2xl"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-white font-weight-bold m-0">Isolation Forest Core</h6>
+                        <small class="text-grey font-mono" style="font-size: 0.75rem;">Status: MODEL ACTIVE | Accuracy: 95.35%</small>
+                        <p class="m-0 mt-1 text-grey" style="font-size: 0.8rem;">
+                            Detects multi-dimensional traffic anomalies in packet size, destination ports, protocols, and transaction sequences.
+                        </p>
+                    </div>
+                </div>
+
+                {% if role == 'Admin' %}
+                <p class="text-grey mb-3" style="font-size: 0.8rem;">
+                    As an Admin, you can manually force the system to rebuild synthetic training datasets from logged traffic history and retrain the Isolation Forest.
+                </p>
+                <button class="btn btn-neon-green w-100 font-weight-bold py-2 d-flex align-items-center justify-content-center gap-2 mt-auto" id="retrainBtn">
+                    <i class="fa-solid fa-rotate"></i>
+                    <span>RETRAIN ANOMALY ENGINE</span>
+                </button>
+                {% else %}
+                <div class="alert alert-secondary bg-darker-slate border-slate text-grey mb-0" style="font-size: 0.8rem;">
+                    <i class="fa-solid fa-lock me-2"></i> Only administrators can retrain the AI Isolation Forest model parameters.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Grid 4: Live Telemetry Feeds -->
+<div class="row g-4">
+    <!-- Live Traffic Feed -->
+    <div class="col-12 col-xl-6">
+        <div class="card bg-dark-slate border border-slate rounded-3 p-4 h-100">
+            <h5 class="text-white font-weight-bold border-bottom border-slate pb-3 mb-3 d-flex align-items-center justify-content-between">
+                <span class="d-flex align-items-center gap-2"><i class="fa-solid fa-receipt text-neon-cyan"></i> Live Sniffed Packets</span>
+                <span class="badge bg-neon-cyan-outline text-neon-cyan font-mono" style="font-size: 0.7rem;">REAL-TIME FEED</span>
+            </h5>
+            <div class="table-responsive" style="max-height: 280px; overflow-y: auto;">
+                <table class="table table-dark table-hover align-middle border-0 m-0" id="livePacketTable">
+                    <thead>
+                        <tr class="font-mono text-grey" style="font-size: 0.75rem;">
+                            <th>Timestamp</th>
+                            <th>Source IP</th>
+                            <th>Destination IP</th>
+                            <th>Protocol</th>
+                            <th class="text-end">Size (B)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="font-mono" style="font-size: 0.8rem;">
+                        <tr>
+                            <td colspan="5" class="text-center py-4 text-grey">Awaiting packet stream...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- Recent Critical Alerts Feed -->
+    <div class="col-12 col-xl-6">
+        <div class="card bg-dark-slate border border-slate rounded-3 p-4 h-100">
+            <h5 class="text-white font-weight-bold border-bottom border-slate pb-3 mb-3 d-flex align-items-center justify-content-between">
+                <span class="d-flex align-items-center gap-2"><i class="fa-solid fa-circle-exclamation text-neon-red"></i> Critical threat logs</span>
+                <span class="badge bg-neon-red-outline text-neon-red font-mono" style="font-size: 0.7rem;">URGENT ACTIONS</span>
+            </h5>
+            <div class="table-responsive" style="max-height: 280px; overflow-y: auto;">
+                <table class="table table-dark table-hover align-middle border-0 m-0" id="criticalThreatTable">
+                    <thead>
+                        <tr class="font-mono text-grey" style="font-size: 0.75rem;">
+                            <th>Type</th>
+                            <th>Source IP</th>
+                            <th>Severity</th>
+                            <th>Timestamp</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="font-mono" style="font-size: 0.8rem;">
+                        <tr>
+                            <td colspan="5" class="text-center py-4 text-grey">No active threat alerts in logs.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

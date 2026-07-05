@@ -1,0 +1,323 @@
+{% extends "base.html" %}
+
+{% block title %}Firewall Blocks - AI Threat Monitor{% endblock %}
+{% block header_title %}Mitigation Firewall Rules{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <!-- Left Column: Current Blocked IPs Table -->
+    <div class="col-12 col-xl-8">
+        <div class="card bg-dark-slate border border-slate rounded-3 p-4">
+            <h5 class="text-white font-weight-bold border-bottom border-slate pb-3 mb-3 d-flex align-items-center justify-content-between">
+                <span><i class="fa-solid fa-ban text-neon-purple me-2"></i> Active IP Restrictions</span>
+                <span class="badge bg-neon-purple-outline text-neon-purple font-mono" id="totalBlocksCount" style="font-size: 0.7rem;">0 BLOCKS ACTIVE</span>
+            </h5>
+            
+            <!-- Table Search -->
+            <div class="mb-3">
+                <div class="input-group border border-slate rounded bg-darker-slate overflow-hidden" style="max-width: 320px;">
+                    <span class="input-group-text border-0 bg-transparent text-grey"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" class="form-control border-0 bg-transparent text-white font-mono" id="searchBlockedIp" placeholder="Search IP address or reason...">
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle border-0 m-0" id="blockedIpsTable">
+                    <thead>
+                        <tr class="font-mono text-grey border-bottom border-slate" style="font-size: 0.75rem;">
+                            <th>IP Address</th>
+                            <th>Reason</th>
+                            <th>Blocked At (UTC)</th>
+                            <th>Expires At (UTC)</th>
+                            <th>Blocked By</th>
+                            {% if role == 'Admin' %}
+                            <th class="text-end">Actions</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody class="font-mono" style="font-size: 0.8rem;">
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-grey">
+                                <i class="fa-solid fa-spinner fa-spin fa-lg me-2"></i> Querying restricted hosts...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination footer -->
+            <div class="d-flex justify-content-between align-items-center border-top border-slate pt-3 mt-3">
+                <div class="text-grey font-mono" style="font-size: 0.7rem;">
+                    Page <span id="blockCurrentPage">1</span> of <span id="blockTotalPages">1</span>
+                </div>
+                <nav aria-label="Blocked IP navigation">
+                    <ul class="pagination pagination-sm m-0" id="blockPagination">
+                        <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+                        <li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Add New Block Panel -->
+    <div class="col-12 col-xl-4">
+        <div class="card bg-dark-slate border border-slate rounded-3 p-4 h-100">
+            <h5 class="text-white font-weight-bold border-bottom border-slate pb-3 mb-3">
+                <i class="fa-solid fa-plus text-neon-cyan me-2"></i> Create Manual Block Rule
+            </h5>
+
+            {% if role in ('Admin', 'Analyst') %}
+            <form id="addBlockForm" class="font-mono" style="font-size: 0.85rem;">
+                <div class="mb-3">
+                    <label for="ipAddress" class="form-label text-grey text-uppercase" style="font-size: 0.7rem;">IP Address</label>
+                    <input type="text" class="form-control border border-slate bg-darker-slate text-white" id="ipAddress" placeholder="e.g. 198.51.100.45" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="blockReason" class="form-label text-grey text-uppercase" style="font-size: 0.7rem;">Lock Reason</label>
+                    <textarea class="form-control border border-slate bg-darker-slate text-white" id="blockReason" rows="3" placeholder="Reason for placing this restriction..." required></textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label for="blockDuration" class="form-label text-grey text-uppercase" style="font-size: 0.7rem;">Block Expiration</label>
+                    <select class="form-select border border-slate bg-darker-slate text-white" id="blockDuration">
+                        <option value="1">1 HOUR</option>
+                        <option value="2">2 HOURS (DEFAULT ANALYST)</option>
+                        <option value="24">24 HOURS</option>
+                        <option value="168">7 DAYS (1 WEEK)</option>
+                        <option value="">PERMANENT (ADMIN ONLY)</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-neon-purple w-100 font-weight-bold py-2.5 d-flex align-items-center justify-content-center gap-2">
+                    <i class="fa-solid fa-ban"></i>
+                    <span>DEPLOY RESTRICTION</span>
+                </button>
+            </form>
+            {% else %}
+            <div class="alert alert-secondary bg-darker-slate border-slate text-grey m-0" style="font-size: 0.8rem;">
+                <i class="fa-solid fa-lock me-2"></i> Viewer roles lack permission to create firewall restrictions.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        let currentPage = 1;
+        const limit = 10;
+        
+        const tableBody = document.querySelector("#blockedIpsTable tbody");
+        const searchInput = document.getElementById("searchBlockedIp");
+        const totalCountSpan = document.getElementById("totalBlocksCount");
+        const currentPageSpan = document.getElementById("blockCurrentPage");
+        const totalPagesSpan = document.getElementById("blockTotalPages");
+        const paginationList = document.getElementById("blockPagination");
+        
+        const addBlockForm = document.getElementById("addBlockForm");
+
+        // Load blocked IPs
+        async function loadBlockedIPs() {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="text-center py-5 text-grey">
+                        <i class="fa-solid fa-spinner fa-spin fa-lg me-2"></i> Querying restricted hosts...
+                    </td>
+                </tr>
+            `;
+
+            const searchVal = searchInput.value.trim();
+
+            try {
+                const queryParams = new URLSearchParams({
+                    page: currentPage,
+                    limit: limit,
+                    search: searchVal
+                });
+
+                const response = await fetch(`/api/blocked-ips?${queryParams.toString()}`);
+                if (!response.ok) throw new Error("Failed to load blocked IPs");
+
+                const data = await response.json();
+                renderBlockedIPs(data);
+                renderPagination(data);
+            } catch (err) {
+                console.error(err);
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-neon-red">
+                            <i class="fa-solid fa-circle-exclamation me-2"></i> Failed to query restricted hosts.
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Render table
+        function renderBlockedIPs(data) {
+            totalCountSpan.textContent = `${data.total} BLOCKS ACTIVE`;
+            currentPageSpan.textContent = data.current_page;
+            totalPagesSpan.textContent = data.pages || 1;
+
+            if (data.blocked_ips.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-grey">
+                            No firewall restrictions currently logged in DB.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tableBody.innerHTML = "";
+
+            data.blocked_ips.forEach(b => {
+                const createdDate = new Date(b.blocked_at).toISOString().replace('T', ' ').substring(0, 19);
+                const expiresDate = b.expires_at ? new Date(b.expires_at).toISOString().replace('T', ' ').substring(0, 19) : "Never (Permanent)";
+                
+                let actionHtml = "";
+                {% if role == 'Admin' %}
+                actionHtml = `
+                    <td class="text-end">
+                        <button class="btn btn-outline-danger btn-sm font-mono unblock-trigger-btn" style="font-size: 0.7rem;" data-id="${b.id}" data-ip="${b.ip_address}">
+                            <i class="fa-solid fa-trash-can"></i> Lift Block
+                        </button>
+                    </td>
+                `;
+                {% endif %}
+
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td class="font-weight-bold text-neon-purple">${b.ip_address}</td>
+                    <td class="text-white">${b.reason || 'N/A'}</td>
+                    <td>${createdDate}</td>
+                    <td><span class="${b.expires_at ? 'text-grey' : 'text-neon-red font-weight-bold'}">${expiresDate}</span></td>
+                    <td><span class="badge bg-dark border border-slate font-mono text-grey">${b.blocked_by}</span></td>
+                    ${actionHtml}
+                `;
+                tableBody.appendChild(row);
+            });
+
+            // Bind unblock triggers
+            document.querySelectorAll(".unblock-trigger-btn").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    const id = btn.getAttribute("data-id");
+                    const ip = btn.getAttribute("data-ip");
+                    if (confirm(`Lift firewall restriction for IP ${ip}?`)) {
+                        unblockIP(id);
+                    }
+                });
+            });
+        }
+
+        // Render pagination links
+        function renderPagination(data) {
+            paginationList.innerHTML = "";
+
+            const prevItem = document.createElement("li");
+            prevItem.className = `page-item ${data.current_page === 1 ? 'disabled' : ''}`;
+            prevItem.innerHTML = `<a class="page-link" href="#" data-page="${data.current_page - 1}">Previous</a>`;
+            paginationList.appendChild(prevItem);
+
+            const nextItem = document.createElement("li");
+            nextItem.className = `page-item ${data.current_page === data.pages || data.pages === 0 ? 'disabled' : ''}`;
+            nextItem.innerHTML = `<a class="page-link" href="#" data-page="${data.current_page + 1}">Next</a>`;
+            paginationList.appendChild(nextItem);
+
+            paginationList.querySelectorAll("a").forEach(a => {
+                a.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    const page = parseInt(a.getAttribute("data-page"));
+                    if (page && page !== currentPage) {
+                        currentPage = page;
+                        loadBlockedIPs();
+                    }
+                });
+            });
+        }
+
+        // Unblock IP fetch
+        async function unblockIP(id) {
+            const token = document.getElementById("globalCsrfToken").value;
+            try {
+                const response = await fetch(`/api/blocked-ips/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-Token': token
+                    }
+                });
+
+                const data = await response.json();
+                if (response.ok && data.success) {
+                    showToast(data.message, "success");
+                    loadBlockedIPs();
+                } else {
+                    showToast(data.message || "Failed to unblock IP address", "danger");
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("Failed to connect to server.", "danger");
+            }
+        }
+
+        // Add manual block Form submit
+        if (addBlockForm) {
+            addBlockForm.addEventListener("submit", async (e) => {
+                e.preventDefault();
+                const ip_address = document.getElementById("ipAddress").value.trim();
+                const reason = document.getElementById("blockReason").value.trim();
+                const duration_hours = document.getElementById("blockDuration").value;
+                const token = document.getElementById("globalCsrfToken").value;
+
+                try {
+                    const response = await fetch('/api/blocked-ips', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-Token': token
+                        },
+                        body: JSON.stringify({
+                            ip_address,
+                            reason,
+                            duration_hours: duration_hours ? parseFloat(duration_hours) : null
+                        })
+                    });
+
+                    const data = await response.json();
+                    if (response.ok && data.success) {
+                        showToast(`IP ${ip_address} blocked successfully.`, "success");
+                        addBlockForm.reset();
+                        currentPage = 1;
+                        loadBlockedIPs();
+                    } else {
+                        showToast(data.message || "Failed to establish lock rule.", "danger");
+                    }
+                } catch (err) {
+                    console.error(err);
+                    showToast("Failed to connect to server.", "danger");
+                }
+            });
+        }
+
+        // Bind search input typing (debounce)
+        let searchTimeout;
+        searchInput.addEventListener("input", () => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                currentPage = 1;
+                loadBlockedIPs();
+            }, 300);
+        });
+
+        // Load initially
+        loadBlockedIPs();
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,306 @@
+/* Core Stylesheet: Cyberpunk Security Theme */
+:root {
+    --cyber-dark: #090d16;
+    --dark-slate: #101625;
+    --darker-slate: #0b0f1a;
+    --slate-border: #1e293b;
+    
+    --neon-cyan: #00f2fe;
+    --neon-cyan-glow: rgba(0, 242, 254, 0.25);
+    
+    --neon-purple: #b557f6;
+    --neon-purple-glow: rgba(181, 87, 246, 0.25);
+    
+    --neon-red: #ff3838;
+    --neon-red-glow: rgba(255, 56, 56, 0.25);
+    
+    --neon-green: #00ff66;
+    --neon-green-glow: rgba(0, 255, 102, 0.25);
+    
+    --neon-amber: #ffb300;
+    --neon-amber-glow: rgba(255, 179, 0, 0.25);
+    
+    --slate-light: #cbd5e1;
+    --text-grey: #64748b;
+    --card-hover-bg: #151d30;
+}
+
+body {
+    background-color: var(--cyber-dark);
+    font-family: 'Outfit', sans-serif;
+    color: var(--slate-light);
+    overflow-x: hidden;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: var(--cyber-dark);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--slate-border);
+    border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-grey);
+}
+
+/* Sidebar Layout styles */
+#sidebar {
+    width: 260px;
+    min-width: 260px;
+    background-color: var(--dark-slate);
+    transition: all 0.3s ease;
+}
+
+#sidebar .nav-link {
+    color: var(--text-grey);
+    font-size: 0.95rem;
+    font-weight: 500;
+    border-left: 3px solid transparent;
+    transition: all 0.2s ease;
+}
+
+#sidebar .nav-link:hover {
+    background-color: var(--card-hover-bg);
+    color: var(--neon-cyan);
+    border-left-color: var(--neon-cyan-glow);
+}
+
+#sidebar .nav-link.active {
+    background-color: var(--card-hover-bg);
+    color: var(--neon-cyan);
+    border-left-color: var(--neon-cyan);
+}
+
+/* Glassmorphism Elements */
+.glassmorphism {
+    background: rgba(16, 22, 37, 0.75) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+/* Custom Cards */
+.card {
+    background-color: var(--dark-slate);
+    border-color: var(--slate-border);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Neon Glow Triggers */
+.shadow-neon-cyan {
+    box-shadow: 0 0 15px var(--neon-cyan-glow);
+}
+
+.shadow-neon-purple {
+    box-shadow: 0 0 15px var(--neon-purple-glow);
+}
+
+/* Neon buttons */
+.btn-neon-cyan {
+    background: var(--neon-cyan);
+    color: var(--cyber-dark) !important;
+    border: none;
+    box-shadow: 0 0 10px var(--neon-cyan-glow);
+    transition: all 0.2s ease;
+}
+.btn-neon-cyan:hover {
+    background: #00e0ed;
+    box-shadow: 0 0 18px rgba(0, 242, 254, 0.5);
+    transform: translateY(-1px);
+}
+
+.btn-neon-purple {
+    background: var(--neon-purple);
+    color: white !important;
+    border: none;
+    box-shadow: 0 0 10px var(--neon-purple-glow);
+    transition: all 0.2s ease;
+}
+.btn-neon-purple:hover {
+    background: #a448e5;
+    box-shadow: 0 0 18px rgba(181, 87, 246, 0.5);
+    transform: translateY(-1px);
+}
+
+/* Outline buttons */
+.btn-outline-cyan {
+    border: 1px solid var(--neon-cyan);
+    color: var(--neon-cyan);
+    background: transparent;
+    transition: all 0.2s ease;
+}
+.btn-outline-cyan:hover {
+    background: var(--neon-cyan-glow);
+    color: var(--neon-cyan);
+}
+
+.btn-outline-purple {
+    border: 1px solid var(--neon-purple);
+    color: var(--neon-purple);
+    background: transparent;
+    transition: all 0.2s ease;
+}
+.btn-outline-purple:hover {
+    background: var(--neon-purple-glow);
+    color: var(--neon-purple);
+}
+
+/* Neon text color configurations */
+.text-neon-cyan { color: var(--neon-cyan) !important; }
+.text-neon-purple { color: var(--neon-purple) !important; }
+.text-neon-red { color: var(--neon-red) !important; }
+.text-neon-green { color: var(--neon-green) !important; }
+.text-neon-amber { color: var(--neon-amber) !important; }
+.text-grey { color: var(--text-grey) !important; }
+
+/* Stat Icons container transparent backdrops */
+.bg-neon-cyan-transparent { background-color: rgba(0, 242, 254, 0.08); }
+.bg-neon-purple-transparent { background-color: rgba(181, 87, 246, 0.08); }
+.bg-neon-red-transparent { background-color: rgba(255, 56, 56, 0.08); }
+.bg-neon-green-transparent { background-color: rgba(0, 255, 102, 0.08); }
+
+.bg-danger-transparent { background-color: rgba(255, 56, 56, 0.12) !important; }
+.bg-darker-slate { background-color: var(--darker-slate) !important; }
+.border-slate { border-color: var(--slate-border) !important; }
+
+/* Badges overrides */
+.badge {
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    padding: 0.4em 0.6em;
+}
+.bg-neon-red { background-color: var(--neon-red); }
+.bg-neon-amber { background-color: var(--neon-amber); }
+.bg-neon-cyan { background-color: var(--neon-cyan); }
+.bg-grey-slate { background-color: var(--slate-border); }
+
+/* Neon border badges */
+.bg-neon-cyan-outline {
+    background: transparent;
+    border: 1px solid var(--neon-cyan);
+    color: var(--neon-cyan);
+}
+.bg-neon-red-outline {
+    background: transparent;
+    border: 1px solid var(--neon-red);
+    color: var(--neon-red);
+}
+.bg-neon-purple-outline {
+    background: transparent;
+    border: 1px solid var(--neon-purple);
+    color: var(--neon-purple);
+}
+.bg-neon-green-outline {
+    background: transparent;
+    border: 1px solid var(--neon-green);
+    color: var(--neon-green);
+}
+.bg-grey-outline {
+    background: transparent;
+    border: 1px solid var(--text-grey);
+    color: var(--text-grey);
+}
+
+/* Status Indicator Ping Pulse */
+.status-indicator-ping {
+    width: 8px;
+    height: 8px;
+    background-color: var(--neon-green);
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 0 8px var(--neon-green);
+}
+
+.pulse {
+    animation: pulse-animation 2s infinite;
+}
+
+@keyframes pulse-animation {
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(0, 255, 102, 0.7);
+    }
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 6px rgba(0, 255, 102, 0);
+    }
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(0, 255, 102, 0);
+    }
+}
+
+/* Bootstrap Overrides for custom dark components */
+.table-dark {
+    --bs-table-bg: transparent;
+    --bs-table-border-color: var(--slate-border);
+    --bs-table-hover-bg: var(--card-hover-bg);
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: var(--darker-slate);
+    color: white;
+    border-color: var(--neon-cyan);
+    box-shadow: 0 0 8px var(--neon-cyan-glow);
+}
+
+.form-control, .form-select {
+    border-color: var(--slate-border);
+}
+
+.pagination {
+    --bs-pagination-bg: var(--darker-slate);
+    --bs-pagination-border-color: var(--slate-border);
+    --bs-pagination-color: var(--slate-light);
+    --bs-pagination-hover-bg: var(--card-hover-bg);
+    --bs-pagination-hover-border-color: var(--slate-border);
+    --bs-pagination-hover-color: var(--neon-cyan);
+    --bs-pagination-active-bg: var(--neon-cyan);
+    --bs-pagination-active-border-color: var(--neon-cyan);
+    --bs-pagination-active-color: var(--cyber-dark);
+    --bs-pagination-disabled-bg: var(--cyber-dark);
+    --bs-pagination-disabled-border-color: var(--slate-border);
+    --bs-pagination-disabled-color: var(--text-grey);
+}
+
+/* Custom list group borders */
+.list-group-item-dark {
+    background-color: var(--darker-slate);
+    border-color: var(--slate-border);
+    color: var(--slate-light);
+}
+
+.nav-tabs .nav-link {
+    color: var(--text-grey);
+    border-color: transparent;
+    transition: all 0.2s ease;
+}
+.nav-tabs .nav-link:hover {
+    color: var(--neon-cyan);
+    border-color: transparent;
+}
+.nav-tabs .nav-link.active {
+    background-color: transparent;
+    color: var(--neon-cyan);
+    border-bottom: 2px solid var(--neon-cyan);
+    border-color: transparent transparent var(--neon-cyan) transparent;
+}
+
+/* Extra Typography helpers */
+.font-mono {
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+}
+.font-weight-bold { font-weight: 700 !important; }
+.tracking-wide { letter-spacing: 0.05em; }
+.tracking-wider { letter-spacing: 0.1em; }

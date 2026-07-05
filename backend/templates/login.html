@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHIELD_IDS - Security Login</title>
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body {
+            background: linear-gradient(135deg, #090d16 0%, #0c1222 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-vh: 100vh;
+            font-family: 'Outfit', sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Abstract glowing particles in background */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: rgba(0, 242, 254, 0.05);
+            border-radius: 50%;
+            top: 10%;
+            left: 10%;
+            filter: blur(80px);
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            width: 350px;
+            height: 350px;
+            background: rgba(181, 87, 246, 0.05);
+            border-radius: 50%;
+            bottom: 10%;
+            right: 10%;
+            filter: blur(90px);
+            z-index: 0;
+        }
+
+        .login-container {
+            z-index: 10;
+            width: 100%;
+            max-width: 440px;
+            padding: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <div class="card bg-dark-slate border border-slate glassmorphism p-4 rounded-4 shadow-lg">
+            
+            <div class="text-center mt-3 mb-4">
+                <div class="brand-logo bg-neon-cyan text-dark d-inline-flex align-items-center justify-content-center rounded-circle mb-3 shadow-neon-cyan" style="width: 55px; height: 55px;">
+                    <i class="fa-solid fa-shield-halved fa-2xl"></i>
+                </div>
+                <h3 class="text-white font-weight-bold tracking-wide">SHIELD_IDS MONITOR</h3>
+                <p class="text-grey font-mono" style="font-size: 0.8rem;">SECURE ADMINISTRATIVE AUTHENTICATION</p>
+            </div>
+
+            <div class="alert alert-danger d-none border-danger bg-danger-transparent text-white" id="loginError" role="alert">
+                <i class="fa-solid fa-circle-exclamation me-2"></i>
+                <span id="loginErrorMsg">Invalid credentials.</span>
+            </div>
+
+            <form id="loginForm">
+                <div class="mb-4">
+                    <label for="username" class="form-label text-grey font-mono text-uppercase" style="font-size: 0.75rem;">Username</label>
+                    <div class="input-group border border-slate rounded-3 bg-darker-slate overflow-hidden">
+                        <span class="input-group-text border-0 bg-transparent text-grey"><i class="fa-solid fa-user"></i></span>
+                        <input type="text" class="form-control border-0 bg-transparent text-white font-mono" id="username" placeholder="Enter username" required autocomplete="username">
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="password" class="form-label text-grey font-mono text-uppercase" style="font-size: 0.75rem;">Password</label>
+                    <div class="input-group border border-slate rounded-3 bg-darker-slate overflow-hidden">
+                        <span class="input-group-text border-0 bg-transparent text-grey"><i class="fa-solid fa-lock"></i></span>
+                        <input type="password" class="form-control border-0 bg-transparent text-white font-mono" id="password" placeholder="Enter password" required autocomplete="current-password">
+                        <button type="button" class="btn border-0 bg-transparent text-grey" id="togglePasswordBtn">
+                            <i class="fa-solid fa-eye-slash" id="passwordEyeIcon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-neon-cyan w-100 py-2.5 rounded-3 font-weight-bold d-flex align-items-center justify-content-center gap-2 mt-2">
+                    <i class="fa-solid fa-unlock-keyhole"></i>
+                    <span>AUTHENTICATE</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- CSRF Token helper -->
+    <input type="hidden" id="globalCsrfToken" value="{{ csrf_token }}">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Password visibility toggler
+        const togglePasswordBtn = document.getElementById('togglePasswordBtn');
+        const passwordInput = document.getElementById('password');
+        const passwordEyeIcon = document.getElementById('passwordEyeIcon');
+
+        togglePasswordBtn.addEventListener('click', () => {
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                passwordEyeIcon.classList.remove('fa-eye-slash');
+                passwordEyeIcon.classList.add('fa-eye');
+            } else {
+                passwordInput.type = 'password';
+                passwordEyeIcon.classList.remove('fa-eye');
+                passwordEyeIcon.classList.add('fa-eye-slash');
+            }
+        });
+
+        // Form submit
+        const loginForm = document.getElementById('loginForm');
+        const errorAlert = document.getElementById('loginError');
+        const errorMsg = document.getElementById('loginErrorMsg');
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            errorAlert.classList.add('d-none');
+
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    // Redirect to dashboard page
+                    window.location.href = '/dashboard';
+                } else {
+                    errorMsg.textContent = data.message || 'Login failed. Invalid username or password.';
+                    errorAlert.classList.remove('d-none');
+                }
+            } catch (err) {
+                errorMsg.textContent = 'Server communication error. Please ensure database and backend services are active.';
+                errorAlert.classList.remove('d-none');
+                console.error(err);
+            }
+        });
+    </script>
+</body>
+</html>
