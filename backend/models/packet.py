@@ -3,8 +3,13 @@ from backend.extensions import db
 
 class Packet(db.Model):
     __tablename__ = 'packets'
+    __table_args__ = (
+        db.Index('idx_packet_timestamp', 'timestamp'),
+        db.Index('idx_packet_src_ip', 'src_ip'),
+        db.Index('idx_packet_dst_ip', 'dst_ip'),
+    )
 
-    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    id = db.Column(db.BigInteger().with_variant(db.Integer(), 'sqlite'), primary_key=True, autoincrement=True)
     timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     src_ip = db.Column(db.String(45), nullable=False)
     dst_ip = db.Column(db.String(45), nullable=False)

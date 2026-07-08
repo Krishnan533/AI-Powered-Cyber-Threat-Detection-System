@@ -113,7 +113,7 @@ class BlockedIPController:
             user_id = session.get('user_id')
             username = session.get('username', 'System')
 
-            block = BlockedIP.query.get(ip_id)
+            block = db.session.get(BlockedIP, ip_id)
             if not block:
                 return jsonify({'success': False, 'message': 'Blocked IP entry not found.'}), 404
 

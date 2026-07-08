@@ -1,7 +1,7 @@
 import os
 import subprocess
 from datetime import datetime, timedelta
-from flask import jsonify, request, current_app
+from flask import jsonify, request, current_app, session
 from sqlalchemy import func
 from backend.extensions import db
 from backend.models import Packet, Threat, BlockedIP, User
@@ -43,6 +43,9 @@ class DashboardController:
             ).filter(Threat.status == 'Active').group_by(Threat.severity_level).all()
             severities = {r[0]: r[1] for r in severity_counts}
             
+            # AI anomaly counter
+            ai_threats = Threat.query.filter_by(ai_detected=True).count()
+
             # Default empty buckets for clean client rendering
             for level in ['Low', 'Medium', 'High', 'Critical']:
                 if level not in severities:
@@ -58,7 +61,8 @@ class DashboardController:
                     'total': total_threats,
                     'active': active_threats,
                     'resolved': resolved_threats,
-                    'severities': severities
+                    'severities': severities,
+                    'ai_anomalies': ai_threats
                 },
                 'blocked_ips': {
                     'active_count': total_blocked
@@ -76,62 +80,36 @@ class DashboardController:
             now = datetime.utcnow()
             six_hours_ago = now - timedelta(hours=6)
 
-            # Query packets and threats
-            packets = db.session.query(
-                func.concat(func.date(Packet.timestamp), ' ', func.hour(Packet.timestamp), ':', func.floor(func.minute(Packet.timestamp)/5)*5),
-                func.count(Packet.id)
-            ).filter(Packet.timestamp >= six_hours_ago).group_by(
-                func.concat(func.date(Packet.timestamp), ' ', func.hour(Packet.timestamp), ':', func.floor(func.minute(Packet.timestamp)/5)*5)
-            ).all()
+            packet_rows = Packet.query.filter(Packet.timestamp >= six_hours_ago).all()
+            threat_rows = Threat.query.filter(Threat.timestamp >= six_hours_ago).all()
 
-            threats = db.session.query(
-                func.concat(func.date(Threat.timestamp), ' ', func.hour(Threat.timestamp), ':', func.floor(func.minute(Threat.timestamp)/5)*5),
-                func.count(Threat.id)
-            ).filter(Threat.timestamp >= six_hours_ago).group_by(
-                func.concat(func.date(Threat.timestamp), ' ', func.hour(Threat.timestamp), ':', func.floor(func.minute(Threat.timestamp)/5)*5)
-            ).all()
-
-            # Compile into timeline dictionary list
-            timeline_dict = {}
-            
             # Seed 5-minute intervals to ensure no gaps in chart
-            temp_time = six_hours_ago
+            timeline = {}
+            temp_time = six_hours_ago.replace(second=0, microsecond=0)
+            step = timedelta(minutes=5)
             while temp_time <= now:
-                time_str = f"{temp_time.date()} {temp_time.hour}:{int(temp_time.minute/5)*5}"
-                # Format minute string: prepend 0 if needed (e.g. 5 -> 05)
-                # Parse date parts for standardization
-                parts = time_str.split(':')
-                m_part = parts[1]
-                if len(m_part) == 1:
-                    m_part = '0' + m_part
-                formatted_key = f"{parts[0]}:{m_part}"
-                
-                timeline_dict[formatted_key] = {'timestamp': formatted_key, 'packets': 0, 'threats': 0}
-                temp_time += timedelta(minutes=5)
+                label = temp_time.strftime('%Y-%m-%d %H:%M')
+                timeline[label] = {'timestamp': label, 'packets': 0, 'threats': 0}
+                temp_time += step
 
-            # Fill packet counts
-            for row in packets:
-                # Format key
-                parts = row[0].split(':')
-                m_part = parts[1]
-                if len(m_part) == 1:
-                    m_part = '0' + m_part
-                key = f"{parts[0]}:{m_part}"
-                if key in timeline_dict:
-                    timeline_dict[key]['packets'] = row[1]
+            def bucket_label(timestamp):
+                if not timestamp:
+                    return None
+                rounded_minute = (timestamp.minute // 5) * 5
+                rounded = timestamp.replace(minute=rounded_minute, second=0, microsecond=0)
+                return rounded.strftime('%Y-%m-%d %H:%M')
 
-            # Fill threat counts
-            for row in threats:
-                parts = row[0].split(':')
-                m_part = parts[1]
-                if len(m_part) == 1:
-                    m_part = '0' + m_part
-                key = f"{parts[0]}:{m_part}"
-                if key in timeline_dict:
-                    timeline_dict[key]['threats'] = row[1]
+            for packet in packet_rows:
+                label = bucket_label(packet.timestamp)
+                if label and label in timeline:
+                    timeline[label]['packets'] += 1
 
-            sorted_timeline = sorted(timeline_dict.values(), key=lambda x: x['timestamp'])
+            for threat in threat_rows:
+                label = bucket_label(threat.timestamp)
+                if label and label in timeline:
+                    timeline[label]['threats'] += 1
 
+            sorted_timeline = sorted(timeline.values(), key=lambda x: x['timestamp'])
             return jsonify(sorted_timeline), 200
 
         except Exception as e:

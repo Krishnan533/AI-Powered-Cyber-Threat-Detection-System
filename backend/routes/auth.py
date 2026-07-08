@@ -1,4 +1,4 @@
-from flask import Blueprint, render_url, render_template, session, redirect, url_for
+from flask import Blueprint, render_template, session, redirect, url_for
 from backend.controllers.auth_controller import AuthController
 from backend.middlewares.auth_middleware import csrf_protect, generate_csrf_token
 from backend.middlewares.rate_limiter import limit_requests

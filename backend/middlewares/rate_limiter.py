@@ -1,6 +1,6 @@
 import time
 from functools import wraps
-from flask import request, jsonify
+from flask import request, jsonify, current_app
 
 # Dictionary tracking sliding request timestamps: client_ip -> list of timestamps
 _request_records = {}
@@ -16,6 +16,9 @@ def limit_requests(limit=60, period=60):
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
+            if current_app and current_app.config.get('TESTING'):
+                return f(*args, **kwargs)
+
             client_ip = request.remote_addr
             now = time.time()
             

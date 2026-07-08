@@ -3,8 +3,15 @@ from backend.extensions import db
 
 class Threat(db.Model):
     __tablename__ = 'threats'
+    __table_args__ = (
+        db.Index('idx_threat_source_ip', 'source_ip'),
+        db.Index('idx_threat_type', 'type'),
+        db.Index('idx_threat_status', 'status'),
+        db.Index('idx_threat_severity_level', 'severity_level'),
+        db.Index('idx_threat_timestamp', 'timestamp'),
+    )
 
-    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    id = db.Column(db.BigInteger().with_variant(db.Integer(), 'sqlite'), primary_key=True, autoincrement=True)
     type = db.Column(db.String(50), nullable=False) # DDoS, Port Scan, Brute Force, Unknown IP, Malware Traffic, AI Anomaly
     source_ip = db.Column(db.String(45), nullable=False)
     destination_ip = db.Column(db.String(45), nullable=True)

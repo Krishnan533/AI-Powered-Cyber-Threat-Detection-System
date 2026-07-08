@@ -9,10 +9,6 @@ class AuthController:
     @staticmethod
     def login():
         """Handles user session authentication."""
-        # Check if user is already authenticated
-        if 'user_id' in session:
-            return jsonify({'success': True, 'message': 'Already authenticated', 'role': session.get('role')}), 200
-
         data = request.get_json() or {}
         username = sanitize_string(data.get('username', ''))
         password = data.get('password', '')
@@ -85,7 +81,7 @@ class AuthController:
         if 'user_id' not in session:
             return jsonify({'authenticated': False}), 401
             
-        user = User.query.get(session['user_id'])
+        user = db.session.get(User, session['user_id'])
         if not user:
             session.clear()
             return jsonify({'authenticated': False}), 401

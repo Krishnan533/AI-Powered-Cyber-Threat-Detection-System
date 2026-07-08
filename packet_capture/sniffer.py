@@ -139,6 +139,8 @@ class NetworkSniffer:
                 self.threat_detector.process_packet(packet_record)
                 
         except Exception as e:
+            db.session.rollback()
+            log_system('ERROR', f"Error parsing packet: {e}")
             print(f"Error parsing packet: {e}")
 
     def _run_simulation(self):

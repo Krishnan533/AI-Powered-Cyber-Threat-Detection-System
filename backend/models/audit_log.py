@@ -3,8 +3,12 @@ from backend.extensions import db
 
 class AuditLog(db.Model):
     __tablename__ = 'audit_logs'
+    __table_args__ = (
+        db.Index('idx_audit_timestamp', 'timestamp'),
+        db.Index('idx_audit_action', 'action'),
+    )
 
-    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='SET NULL'), nullable=True)
     action = db.Column(db.String(100), nullable=False) # e.g., USER_LOGIN, IP_BLOCKED, THREAT_RESOLVED
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)

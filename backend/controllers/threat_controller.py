@@ -66,7 +66,7 @@ class ThreatController:
             if new_status not in ('Active', 'Resolved', 'False Positive'):
                 return jsonify({'success': False, 'message': 'Invalid status choice.'}), 400
 
-            threat = Threat.query.get(threat_id)
+            threat = db.session.get(Threat, threat_id)
             if not threat:
                 return jsonify({'success': False, 'message': 'Threat alert record not found.'}), 404
 

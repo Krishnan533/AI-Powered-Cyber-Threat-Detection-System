@@ -47,6 +47,15 @@ class ThreatDetector:
         curr_time = packet_model.timestamp or datetime.utcnow()
         curr_ts = curr_time.timestamp()
 
+        # Skip processing for IPs that are already actively blocked.
+        blocked_entry = BlockedIP.query.filter_by(ip_address=src_ip).first()
+        if blocked_entry:
+            if not blocked_entry.is_expired():
+                return
+            # Clean up expired block before continuing detection.
+            db.session.delete(blocked_entry)
+            db.session.commit()
+
         # Calculate time delta for AI model
         time_delta = 0.0
         if src_ip in self.last_packet_time:

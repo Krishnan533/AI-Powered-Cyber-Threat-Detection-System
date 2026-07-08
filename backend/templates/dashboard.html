@@ -31,6 +31,9 @@
                 <span class="text-grey font-mono text-uppercase" style="font-size: 0.75rem;">Active Threats</span>
                 <h2 class="m-0 text-neon-red font-weight-bold font-mono mt-1" id="statActiveThreats">0</h2>
                 <small class="text-neon-red font-mono" style="font-size: 0.7rem;"><i class="fa-solid fa-skull-crossbones"></i> Requires Action</small>
+                <div class="text-grey font-mono mt-1" style="font-size: 0.68rem;">
+                    Resolved alerts: <span id="statResolvedThreats">0</span>
+                </div>
             </div>
             <div class="stat-icon bg-neon-red-transparent text-neon-red d-flex align-items-center justify-content-center rounded-3" style="width: 50px; height: 50px;">
                 <i class="fa-solid fa-triangle-exclamation fa-xl"></i>
@@ -82,13 +85,55 @@
     </div>
     <!-- Chart: Protocol Distribution -->
     <div class="col-12 col-xl-4">
-        <div class="card bg-dark-slate border border-slate rounded-3 p-4">
+        <div class="card bg-dark-slate border border-slate rounded-3 p-4 mb-4">
             <h5 class="text-white font-weight-bold border-bottom border-slate pb-3 mb-3 d-flex align-items-center gap-2">
                 <i class="fa-solid fa-chart-pie text-neon-purple"></i> Protocol Breakdown
             </h5>
             <div id="chartProtocol" style="height: 320px; width: 100%;">
                 <div class="d-flex align-items-center justify-content-center h-100 text-grey font-mono">
                     <i class="fa-solid fa-spinner fa-spin me-2"></i> Computing protocol distribution...
+                </div>
+            </div>
+        </div>
+
+        <div class="card bg-dark-slate border border-slate rounded-3 p-4">
+            <h5 class="text-white font-weight-bold border-bottom border-slate pb-3 mb-3 d-flex align-items-center gap-2">
+                <i class="fa-solid fa-network-wired text-neon-cyan"></i> Top Talkers
+            </h5>
+            <div class="mb-4">
+                <h6 class="text-white font-weight-bold mb-2">Top Sources</h6>
+                <div class="table-responsive" style="max-height: 150px; overflow-y: auto;">
+                    <table class="table table-dark table-sm align-middle mb-0">
+                        <thead>
+                            <tr class="text-grey font-mono" style="font-size: 0.75rem;">
+                                <th>IP</th>
+                                <th class="text-end">Count</th>
+                            </tr>
+                        </thead>
+                        <tbody id="topSourcesBody">
+                            <tr>
+                                <td colspan="2" class="text-center py-3 text-grey" style="font-size: 0.8rem;">Loading top sources...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div>
+                <h6 class="text-white font-weight-bold mb-2">Top Destinations</h6>
+                <div class="table-responsive" style="max-height: 150px; overflow-y: auto;">
+                    <table class="table table-dark table-sm align-middle mb-0">
+                        <thead>
+                            <tr class="text-grey font-mono" style="font-size: 0.75rem;">
+                                <th>IP</th>
+                                <th class="text-end">Count</th>
+                            </tr>
+                        </thead>
+                        <tbody id="topDestinationsBody">
+                            <tr>
+                                <td colspan="2" class="text-center py-3 text-grey" style="font-size: 0.8rem;">Loading top destinations...</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

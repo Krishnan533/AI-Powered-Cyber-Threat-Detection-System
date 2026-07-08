@@ -25,6 +25,16 @@ class Config:
     SESSION_COOKIE_SECURE = False  # Set True in production with SSL
     SESSION_COOKIE_SAMESITE = 'Lax'
 
+    # Default account bootstrap values; only seeded when enabled or in development.
+    DEFAULT_ADMIN_USERNAME = os.environ.get('DEFAULT_ADMIN_USERNAME', 'admin')
+    DEFAULT_ADMIN_PASSWORD = os.environ.get('DEFAULT_ADMIN_PASSWORD', 'AdminPass123!')
+    DEFAULT_ANALYST_USERNAME = os.environ.get('DEFAULT_ANALYST_USERNAME', 'analyst')
+    DEFAULT_ANALYST_PASSWORD = os.environ.get('DEFAULT_ANALYST_PASSWORD', 'AnalystPass456!')
+    DEFAULT_VIEWER_USERNAME = os.environ.get('DEFAULT_VIEWER_USERNAME', 'viewer')
+    DEFAULT_VIEWER_PASSWORD = os.environ.get('DEFAULT_VIEWER_PASSWORD', 'ViewerPass789!')
+    SEED_DEFAULT_USERS = os.environ.get('SEED_DEFAULT_USERS', 'FALSE').lower() in ('true', '1', 't')
+    SEND_EMAIL_NOTIFICATIONS = os.environ.get('SEND_EMAIL_NOTIFICATIONS', 'TRUE').lower() in ('true', '1', 't')
+
 class DevelopmentConfig(Config):
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = os.environ.get(
@@ -43,12 +53,7 @@ class ProductionConfig(Config):
 class TestingConfig(Config):
     TESTING = True
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get(
-        'DATABASE_URL', 
-        'mysql+pymysql://root:rootpassword@localhost:3306/network_monitor'
-    )
-    # Use memory database if testing isolated without DB
-    # SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
     WTF_CSRF_ENABLED = False
     SESSION_COOKIE_SECURE = False
 

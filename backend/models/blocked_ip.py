@@ -3,6 +3,10 @@ from backend.extensions import db
 
 class BlockedIP(db.Model):
     __tablename__ = 'blocked_ips'
+    __table_args__ = (
+        db.Index('idx_blocked_ip_address', 'ip_address'),
+        db.Index('idx_blocked_expires_at', 'expires_at'),
+    )
 
     id = db.Column(db.Integer, primary_key=True)
     ip_address = db.Column(db.String(45), nullable=False, unique=True)

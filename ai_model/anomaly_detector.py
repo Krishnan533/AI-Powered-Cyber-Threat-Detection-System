@@ -1,4 +1,5 @@
 import os
+import warnings
 import joblib
 import numpy as np
 
@@ -17,11 +18,19 @@ class AnomalyDetector:
         """Loads model and scaler binaries from disk. Falls back to generating dummy rules if not trained yet."""
         if os.path.exists(self.model_path) and os.path.exists(self.scaler_path):
             try:
-                self.model = joblib.load(self.model_path)
-                self.scaler = joblib.load(self.scaler_path)
+                with warnings.catch_warnings():
+                    warnings.simplefilter("error", category=UserWarning)
+                    self.model = joblib.load(self.model_path)
+                    self.scaler = joblib.load(self.scaler_path)
                 print("AnomalyDetector: Isolation Forest model and scaler loaded successfully.")
+            except Warning as warn:
+                print(f"AnomalyDetector Warning: Model artifact compatibility issue: {warn}. Anomaly detection will use fallback rules.")
+                self.model = None
+                self.scaler = None
             except Exception as e:
                 print(f"AnomalyDetector Warning: Failed to load model files: {e}. Anomaly detection will use fallback rules.")
+                self.model = None
+                self.scaler = None
         else:
             print("AnomalyDetector Warning: Trained model files not found. Anomaly detection will use fallback rules until model is trained.")
 

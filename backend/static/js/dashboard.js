@@ -34,14 +34,20 @@ document.addEventListener("DOMContentLoaded", () => {
                 document.getElementById("statTotalPackets").textContent = stats.packets.total.toLocaleString();
                 document.getElementById("statPacketsHour").textContent = stats.packets.last_hour.toLocaleString();
                 document.getElementById("statActiveThreats").textContent = stats.threats.active.toLocaleString();
+                document.getElementById("statResolvedThreats").textContent = stats.threats.resolved.toLocaleString();
                 document.getElementById("statBlockedIPs").textContent = stats.blocked_ips.active_count.toLocaleString();
-                
-                // Anomaly count is stored under severities/types or in database (we query total threats flagged AI)
-                document.getElementById("statAiAnomalies").textContent = (stats.threats.total - stats.threats.active + stats.threats.active).toLocaleString(); // placeholder dynamic
+                document.getElementById("statAiAnomalies").textContent = stats.threats.ai_anomalies.toLocaleString();
                 
                 // Draw charts
                 drawProtocolChart(stats.packets.protocols);
                 drawSeverityChart(stats.threats.severities);
+            }
+
+            // Top source/destination IP analytics
+            const topIpsResp = await fetch('/api/dashboard/top-ips');
+            if (topIpsResp.ok) {
+                const topIps = await topIpsResp.json();
+                renderTopIps(topIps);
             }
 
             // Timeline charts
@@ -248,6 +254,45 @@ document.addEventListener("DOMContentLoaded", () => {
             `;
             body.appendChild(tr);
         });
+    }
+
+    function renderTopIps(data) {
+        const sourceBody = document.querySelector('#topSourcesBody');
+        const destBody = document.querySelector('#topDestinationsBody');
+
+        if (!data || (!data.sources?.length && !data.destinations?.length)) {
+            sourceBody.innerHTML = `<tr><td colspan="2" class="text-center py-3 text-grey" style="font-size: 0.8rem;">No source IPs yet.</td></tr>`;
+            destBody.innerHTML = `<tr><td colspan="2" class="text-center py-3 text-grey" style="font-size: 0.8rem;">No destination IPs yet.</td></tr>`;
+            return;
+        }
+
+        if (data.sources?.length) {
+            sourceBody.innerHTML = '';
+            data.sources.slice(0, 5).forEach(source => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="text-white font-mono">${source.ip}</td>
+                    <td class="text-end text-grey">${source.count.toLocaleString()}</td>
+                `;
+                sourceBody.appendChild(tr);
+            });
+        } else {
+            sourceBody.innerHTML = `<tr><td colspan="2" class="text-center py-3 text-grey" style="font-size: 0.8rem;">No source IPs yet.</td></tr>`;
+        }
+
+        if (data.destinations?.length) {
+            destBody.innerHTML = '';
+            data.destinations.slice(0, 5).forEach(dest => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="text-white font-mono">${dest.ip}</td>
+                    <td class="text-end text-grey">${dest.count.toLocaleString()}</td>
+                `;
+                destBody.appendChild(tr);
+            });
+        } else {
+            destBody.innerHTML = `<tr><td colspan="2" class="text-center py-3 text-grey" style="font-size: 0.8rem;">No destination IPs yet.</td></tr>`;
+        }
     }
 
     // 5. Bind retrain trigger
