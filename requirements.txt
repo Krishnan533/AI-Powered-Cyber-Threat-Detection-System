@@ -1,4 +1,6 @@
 Flask==3.0.3
+Werkzeug==3.0.3
+blinker==1.8.2
 scapy==2.5.0
 pandas==2.2.2
 numpy==1.26.4
@@ -17,3 +19,4 @@ joblib==1.4.2
 pytest==8.2.2
 psycopg2-binary==2.9.9
 gunicorn==22.0.0
+setuptools>=69.0.0

@@ -46,6 +46,9 @@ ai_model/dataset/sample_traffic.csv
 reports/*.pdf
 reports/*.csv
 *.log
+*.db
+instance/
+
 
 # Docker
 .docker-volumes/

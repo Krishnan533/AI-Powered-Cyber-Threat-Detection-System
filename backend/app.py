@@ -1,9 +1,16 @@
 import os
 import sys
+
+# Ensure root workspace directory is in sys.path
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+
 from flask import Flask, render_template, session, jsonify, request
 from dotenv import load_dotenv
 
 load_dotenv()
+
 
 from backend.config.settings import config_by_name
 from backend.extensions import db, mail
@@ -138,18 +145,26 @@ def create_app(config_name=None, config_overrides=None):
         try:
             with app.app_context():
                 db.create_all()
-                # Migrate missing columns for existing database instances
+                # Migrate missing columns for existing database instances safely without breaking transactions
                 try:
-                    from sqlalchemy import text
-                    with db.engine.connect() as conn:
-                        conn.execute(text("ALTER TABLE users ADD COLUMN email VARCHAR(120)"))
-                        conn.execute(text("ALTER TABLE users ADD COLUMN email_verified BOOLEAN DEFAULT 0"))
-                        conn.execute(text("ALTER TABLE users ADD COLUMN verification_token VARCHAR(100)"))
-                        conn.execute(text("ALTER TABLE users ADD COLUMN reset_token VARCHAR(100)"))
-                        conn.execute(text("ALTER TABLE users ADD COLUMN reset_token_expiration DATETIME"))
-                        conn.commit()
-                except Exception:
-                    pass
+                    from sqlalchemy import inspect, text
+                    inspector = inspect(db.engine)
+                    if 'users' in inspector.get_table_names():
+                        existing_cols = {c['name'] for c in inspector.get_columns('users')}
+                        with db.engine.begin() as conn:
+                            if 'email' not in existing_cols:
+                                conn.execute(text("ALTER TABLE users ADD COLUMN email VARCHAR(120)"))
+                            if 'email_verified' not in existing_cols:
+                                conn.execute(text("ALTER TABLE users ADD COLUMN email_verified BOOLEAN DEFAULT FALSE"))
+                            if 'verification_token' not in existing_cols:
+                                conn.execute(text("ALTER TABLE users ADD COLUMN verification_token VARCHAR(100)"))
+                            if 'reset_token' not in existing_cols:
+                                conn.execute(text("ALTER TABLE users ADD COLUMN reset_token VARCHAR(100)"))
+                            if 'reset_token_expiration' not in existing_cols:
+                                conn.execute(text("ALTER TABLE users ADD COLUMN reset_token_expiration TIMESTAMP"))
+                except Exception as e:
+                    print(f"Column migration check note: {e}")
+
 
                 seed_and_load_settings(app)
                 if not app.config.get('TESTING'):
