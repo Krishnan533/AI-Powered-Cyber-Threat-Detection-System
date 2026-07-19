@@ -38,14 +38,16 @@ class NetworkSniffer:
         self.stop_event.clear()
         self.thread = threading.Thread(target=self._run, name="PacketSnifferDaemon", daemon=True)
         self.thread.start()
-        log_system('INFO', f"NetworkSniffer thread started. Simulation mode: {self.simulation}")
+        with self.app.app_context():
+            log_system('INFO', f"NetworkSniffer thread started. Simulation mode: {self.simulation}")
 
     def stop(self):
         """Signals the background sniffer to stop execution."""
         self.stop_event.set()
         if self.thread:
             self.thread.join(timeout=3.0)
-        log_system('INFO', "NetworkSniffer thread stopped.")
+        with self.app.app_context():
+            log_system('INFO', "NetworkSniffer thread stopped.")
 
     def _run(self):
         """Executes sniffing loop or simulated traffic loop depending on config."""
@@ -56,12 +58,13 @@ class NetworkSniffer:
 
     def _run_live_sniffing(self):
         """Binds to network socket and captures actual system traffic."""
-        if not SCAPY_AVAILABLE:
-            log_system('ERROR', "Scapy is not installed. Live packet capturing unavailable. Falling back to simulation.")
-            self._run_simulation()
-            return
+        with self.app.app_context():
+            if not SCAPY_AVAILABLE:
+                log_system('ERROR', "Scapy is not installed. Live packet capturing unavailable. Falling back to simulation.")
+                self._run_simulation()
+                return
 
-        log_system('INFO', f"Listening for packets on interface '{self.interface or 'default'}'...")
+            log_system('INFO', f"Listening for packets on interface '{self.interface or 'default'}'...")
         
         def packet_handler(pkt):
             if self.stop_event.is_set():
@@ -82,8 +85,9 @@ class NetworkSniffer:
                 
             sniff(**sniff_args)
         except Exception as e:
-            log_system('ERROR', f"Live sniffing failed on adapter '{self.interface or 'default'}': {e}. Falling back to simulation.")
-            self._run_simulation()
+            with self.app.app_context():
+                log_system('ERROR', f"Live sniffing failed on adapter '{self.interface or 'default'}': {e}. Falling back to simulation.")
+                self._run_simulation()
 
     def _parse_and_log_packet(self, pkt):
         """Extracts values from Scapy packet, commits to database, and triggers detector."""
@@ -145,7 +149,8 @@ class NetworkSniffer:
 
     def _run_simulation(self):
         """Generates mock packets simulating web usage, DNS lookup, and periodic threats."""
-        log_system('INFO', "Starting packet simulation daemon loop...")
+        with self.app.app_context():
+            log_system('INFO', "Starting packet simulation daemon loop...")
         
         # Test IPs
         normal_ips = ["192.168.1.15", "192.168.1.20", "192.168.1.35", "10.0.0.12"]
@@ -163,7 +168,9 @@ class NetworkSniffer:
 
         while not self.stop_event.is_set():
             sim_counter += 1
-            time.sleep(self.simulation_interval)
+            interval = self.app.config.get('SNIFFER_SIMULATION_INTERVAL', self.simulation_interval) if self.app else self.simulation_interval
+            time.sleep(interval)
+
             
             with self.app.app_context():
                 try:

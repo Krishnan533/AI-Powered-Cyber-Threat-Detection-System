@@ -1,0 +1,37 @@
+# Tasks
+
+- [x] Fix dependencies and CI/CD config
+  - [x] Add PyJWT to requirements.txt
+  - [x] Fix python-level/python-version typo in `.github/workflows/ci-cd.yml`
+- [x] Fix circular import and syntax bugs
+  - [x] Break circular import in `helpers.py` (import models inside functions)
+  - [x] Fix syntax issue in `email_notifier.py` (remove duplicate method/docstring)
+  - [x] Fix `NameError: name 'db' is not defined` in `auth_controller.py`
+- [x] Support JWT token authentication
+  - [x] Create `backend/utils/jwt_helper.py`
+  - [x] Return JWT token in login API response in `auth_controller.py`
+  - [x] Add dynamic settings loading and JWT validation in `before_request` hook in `app.py`
+- [x] Set SQLite as the default database fallback in settings
+  - [x] Modify `backend/config/settings.py` to use SQLite when `DATABASE_URL` is empty
+- [x] Add System Setting model and database schema seeding
+  - [x] Create `backend/models/system_setting.py`
+  - [x] Update `backend/models/__init__.py` to export the new model
+  - [x] Modify `initialize_system` in `app.py` to seed and load settings
+- [x] Add Settings Module
+  - [x] Create `backend/controllers/settings_controller.py`
+  - [x] Create `backend/routes/settings.py`
+  - [x] Create `backend/templates/settings.html`
+- [x] Add User Management and self-registration
+  - [x] Create `backend/controllers/user_controller.py`
+  - [x] Create `backend/routes/users.py`
+  - [x] Create `backend/templates/users.html`
+  - [x] Register new routes (users, settings) in `backend/routes/__init__.py`
+- [x] Upgrade Frontend Integration
+  - [x] Update `base.html` to add sidebar links for User Management and Settings
+  - [x] Update `dashboard.js` to support real-time toast alert popups on new threats
+- [x] Pre-generate AI Model & Verify
+  - [x] Run `train.py` to generate the default model binaries
+  - [x] Run pytest to verify all automated test cases pass
+  - [x] Run the application locally and check functionality
+- [x] Docker validation
+  - [x] Verify docker-compose builds and runs correctly

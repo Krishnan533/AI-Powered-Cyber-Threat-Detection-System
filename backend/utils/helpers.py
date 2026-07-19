@@ -6,10 +6,10 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, Tabl
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib import colors
 from backend.extensions import db
-from backend.models import AuditLog, SystemLog
 
 def log_audit(action, user_id=None, ip_address=None, details=None):
     """Utility to commit an audit event logs to the database."""
+    from backend.models.audit_log import AuditLog
     try:
         log = AuditLog(
             user_id=user_id,
@@ -26,6 +26,7 @@ def log_audit(action, user_id=None, ip_address=None, details=None):
 
 def log_system(level, message):
     """Utility to write diagnostic messages to system logs database."""
+    from backend.models.system_log import SystemLog
     try:
         # Standard console print
         print(f"[{datetime.utcnow().isoformat()}] [{level}] {message}")

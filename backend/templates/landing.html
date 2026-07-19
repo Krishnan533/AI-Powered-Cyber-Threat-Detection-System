@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHIELD_IDS — AI Autonomous Cyber Threat Intelligence Platform</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <!-- Custom Design Token Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .hero-section {
+            min-height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding-top: 80px;
+            overflow: hidden;
+        }
+
+        #heroGlobeContainer {
+            width: 100%;
+            height: 580px;
+            position: relative;
+        }
+
+        .floating-stat-card {
+            position: absolute;
+            z-index: 10;
+            padding: 1rem 1.25rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            animation: floatAnim 4s ease-in-out infinite alternate;
+        }
+
+        .stat-card-1 { top: 15%; right: 10%; animation-delay: 0s; }
+        .stat-card-2 { bottom: 20%; left: 5%; animation-delay: 1.5s; }
+        .stat-card-3 { bottom: 12%; right: 15%; animation-delay: 2.5s; }
+
+        @keyframes floatAnim {
+            0% { transform: translateY(0px); }
+            100% { transform: translateY(-12px); }
+        }
+
+        .feature-icon-wrapper {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 229, 255, 0.08);
+            border: 1px solid rgba(0, 229, 255, 0.2);
+            color: var(--accent-cyan);
+            font-size: 1.25rem;
+            margin-bottom: 1.25rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sticky Glass Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top glassmorphism border-bottom border-glass py-3">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-3" href="/">
+                <div class="brand-logo bg-neon-cyan text-dark d-flex align-items-center justify-content-center rounded-circle" style="width: 40px; height: 40px;">
+                    <i class="fa-solid fa-shield-halved fa-lg"></i>
+                </div>
+                <div>
+                    <span class="h5 m-0 font-weight-bold text-white tracking-wide brand-title">SHIELD_IDS</span>
+                    <span class="badge bg-neon-cyan-outline ms-2">AI SOC v1.0</span>
+                </div>
+            </a>
+
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
+                <i class="fa-solid fa-bars text-neon-cyan"></i>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navContent">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-lg-4">
+                    <li class="nav-item"><a class="nav-link text-primary" href="#features">Capabilities</a></li>
+                    <li class="nav-item"><a class="nav-link text-primary" href="#architecture">Architecture</a></li>
+                    <li class="nav-item"><a class="nav-link text-primary" href="#analytics">ML Analytics</a></li>
+                </ul>
+
+                <div class="d-flex align-items-center gap-3">
+                    {% if is_logged_in %}
+                    <a href="/dashboard" class="btn btn-neon-cyan px-4 py-2 d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-gauge-high"></i>
+                        <span>COMMAND DASHBOARD</span>
+                    </a>
+                    {% else %}
+                    <a href="/login" class="btn btn-outline-cyan px-4 py-2">LOG IN</a>
+                    <a href="/register" class="btn btn-neon-cyan px-4 py-2 d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-unlock-keyhole"></i>
+                        <span>REGISTER ACCESS</span>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container position-relative" style="z-index: 2;">
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-5 mb-lg-0">
+                    <div class="d-inline-flex align-items-center gap-2 px-3 py-1.5 rounded-pill glass-panel mb-4 border-glass">
+                        <span class="status-indicator-ping"></span>
+                        <span class="font-mono text-neon-cyan" style="font-size: 0.8rem;">AUTONOMOUS AI THREAT MONITORING ACTIVE</span>
+                    </div>
+
+                    <h1 class="display-4 font-weight-bold text-white mb-4" style="line-height: 1.15;">
+                        Next-Gen Cyber Security & <span class="text-neon-cyan">ML Threat Intelligence</span>
+                    </h1>
+
+                    <p class="lead text-grey mb-4" style="max-width: 540px; font-size: 1.1rem;">
+                        Real-time packet capture, unsupervised Isolation Forest anomaly detection, and automated IP lock defenses unified in a live SOC Command Console.
+                    </p>
+
+                    <div class="d-flex flex-wrap align-items-center gap-3 pt-2">
+                        {% if is_logged_in %}
+                        <a href="/dashboard" class="btn btn-neon-cyan btn-lg px-4 py-3 d-flex align-items-center gap-3">
+                            <i class="fa-solid fa-terminal"></i>
+                            <span>ENTER SOC CONSOLE</span>
+                        </a>
+                        {% else %}
+                        <a href="/login" class="btn btn-neon-cyan btn-lg px-4 py-3 d-flex align-items-center gap-3">
+                            <i class="fa-solid fa-shield-cat"></i>
+                            <span>LAUNCH DEMO DASHBOARD</span>
+                        </a>
+                        {% endif %}
+                        <a href="#features" class="btn btn-outline-cyan btn-lg px-4 py-3">EXPLORE TELEMETRY</a>
+                    </div>
+                </div>
+
+                <!-- 3D Three.js Interactive Threat Globe -->
+                <div class="col-lg-6 position-relative">
+                    <div id="heroGlobeContainer"></div>
+
+                    <!-- Floating Glass Metrics Cards -->
+                    <div class="glass-panel floating-stat-card stat-card-1">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="text-neon-red fs-4"><i class="fa-solid fa-ban"></i></div>
+                            <div>
+                                <div class="text-grey font-mono text-uppercase" style="font-size: 0.65rem;">Threats Blocked</div>
+                                <div class="h5 m-0 font-weight-bold tabular-nums text-white" id="threatsBlockedCount">14,290</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel floating-stat-card stat-card-2">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="text-neon-cyan fs-4"><i class="fa-solid fa-microchip"></i></div>
+                            <div>
+                                <div class="text-grey font-mono text-uppercase" style="font-size: 0.65rem;">Packets Analyzed</div>
+                                <div class="h5 m-0 font-weight-bold tabular-nums text-white" id="packetsCount">2,849,120</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel floating-stat-card stat-card-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="text-neon-green fs-4"><i class="fa-solid fa-chart-line"></i></div>
+                            <div>
+                                <div class="text-grey font-mono text-uppercase" style="font-size: 0.65rem;">ML Accuracy</div>
+                                <div class="h5 m-0 font-weight-bold tabular-nums text-white">99.4%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Capabilities Grid Section -->
+    <section id="features" class="py-5 my-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <span class="badge bg-neon-cyan-outline mb-2">SOC PLATFORM CAPABILITIES</span>
+                <h2 class="h1 font-weight-bold text-white">Defensive Cyber Intelligence Features</h2>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="glass-panel p-4 h-100">
+                        <div class="feature-icon-wrapper">
+                            <i class="fa-solid fa-brain"></i>
+                        </div>
+                        <h4 class="text-white h5 font-weight-bold mb-2">AI Anomaly Predictor</h4>
+                        <p class="text-grey mb-0">Unsupervised Isolation Forest algorithm analyzing multi-dimensional network traffic features for zero-day attack patterns.</p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="glass-panel p-4 h-100">
+                        <div class="feature-icon-wrapper" style="border-color: rgba(47,111,255,0.3); color: var(--accent-blue);">
+                            <i class="fa-solid fa-network-wired"></i>
+                        </div>
+                        <h4 class="text-white h5 font-weight-bold mb-2">Packet Sniffer Engine</h4>
+                        <p class="text-grey mb-0">High-performance live packet capture inspecting headers, payloads, flags, and volumetric traffic spikes in real-time.</p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="glass-panel p-4 h-100">
+                        <div class="feature-icon-wrapper" style="border-color: rgba(255,59,92,0.3); color: var(--accent-critical);">
+                            <i class="fa-solid fa-shield-virus"></i>
+                        </div>
+                        <h4 class="text-white h5 font-weight-bold mb-2">Automated Firewall Block</h4>
+                        <p class="text-grey mb-0">Instant threshold-based mitigation automatically containing DDoS floods, SSH brute force, and host port scans.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-4 border-top border-glass text-center text-grey" style="font-size: 0.85rem;">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div>&copy; 2026 SHIELD_IDS Security Operations. All Rights Reserved.</div>
+                <div class="d-flex gap-3 font-mono">
+                    <a href="/login" class="text-grey text-decoration-none">Login</a>
+                    <span>•</span>
+                    <a href="/register" class="text-grey text-decoration-none">Register</a>
+                    <span>•</span>
+                    <a href="/dashboard" class="text-neon-cyan text-decoration-none">SOC Console</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Three.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Custom Scripts -->
+    <script src="{{ url_for('static', filename='js/cursor.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/globe.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.ThreatGlobe) {
+                window.ThreatGlobe.initHeroGlobe('heroGlobeContainer');
+            }
+
+            // Animated metric counter on load
+            function animateCount(id, target) {
+                const el = document.getElementById(id);
+                if (!el) return;
+                let current = 0;
+                const increment = Math.ceil(target / 60);
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        current = target;
+                        clearInterval(timer);
+                    }
+                    el.textContent = current.toLocaleString();
+                }, 25);
+            }
+
+            animateCount('threatsBlockedCount', 14290);
+            animateCount('packetsCount', 2849120);
+        });
+    </script>
+</body>
+</html>

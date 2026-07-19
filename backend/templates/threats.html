@@ -5,20 +5,20 @@
 
 {% block content %}
 <!-- Search and Filters Panel -->
-<div class="card bg-dark-slate border border-slate rounded-3 p-4 mb-4">
+<div class="glass-panel p-4 mb-4">
     <div class="row g-3 align-items-end">
         <!-- Search bar -->
         <div class="col-12 col-md-4">
             <label for="searchThreat" class="form-label text-grey font-mono text-uppercase" style="font-size: 0.7rem;">Search Keywords</label>
-            <div class="input-group border border-slate rounded bg-darker-slate overflow-hidden">
-                <span class="input-group-text border-0 bg-transparent text-grey"><i class="fa-solid fa-magnifying-glass"></i></span>
-                <input type="text" class="form-control border-0 bg-transparent text-white font-mono" id="searchThreat" placeholder="IP, type, description...">
+            <div class="input-group">
+                <span class="input-group-text border-glass bg-transparent text-grey"><i class="fa-solid fa-magnifying-glass"></i></span>
+                <input type="text" class="form-control font-mono" id="searchThreat" placeholder="IP, type, description...">
             </div>
         </div>
         <!-- Filter Severity -->
         <div class="col-12 col-sm-6 col-md-2">
             <label for="filterSeverity" class="form-label text-grey font-mono text-uppercase" style="font-size: 0.7rem;">Filter Severity</label>
-            <select class="form-select border border-slate bg-darker-slate text-white font-mono" id="filterSeverity">
+            <select class="form-select font-mono" id="filterSeverity">
                 <option value="">ALL LEVELS</option>
                 <option value="Low">LOW</option>
                 <option value="Medium">MEDIUM</option>
@@ -29,7 +29,7 @@
         <!-- Filter Status -->
         <div class="col-12 col-sm-6 col-md-2">
             <label for="filterStatus" class="form-label text-grey font-mono text-uppercase" style="font-size: 0.7rem;">Filter Status</label>
-            <select class="form-select border border-slate bg-darker-slate text-white font-mono" id="filterStatus">
+            <select class="form-select font-mono" id="filterStatus">
                 <option value="">ALL STATUSES</option>
                 <option value="Active">ACTIVE</option>
                 <option value="Resolved">RESOLVED</option>
@@ -45,12 +45,12 @@
                 <i class="fa-solid fa-xmark"></i> Clear
             </button>
             <div class="btn-group">
-                <button type="button" class="btn btn-outline-purple dropdown-toggle font-weight-bold" data-bs-toggle="dropdown" aria-expanded="false">
+                <button type="button" class="btn btn-outline-cyan dropdown-toggle font-weight-bold" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="fa-solid fa-download"></i> Export
                 </button>
-                <ul class="dropdown-menu dropdown-menu-dark bg-dark-slate border border-slate">
-                    <li><a class="dropdown-item font-mono" href="#" id="exportCsv"><i class="fa-solid fa-file-csv text-neon-cyan me-2"></i> CSV (.csv)</a></li>
-                    <li><a class="dropdown-item font-mono" href="#" id="exportPdf"><i class="fa-solid fa-file-pdf text-neon-red me-2"></i> PDF (.pdf)</a></li>
+                <ul class="dropdown-menu glass-panel p-2 text-white">
+                    <li><a class="dropdown-item text-white font-mono" href="#" id="exportCsv"><i class="fa-solid fa-file-csv text-neon-cyan me-2"></i> CSV (.csv)</a></li>
+                    <li><a class="dropdown-item text-white font-mono" href="#" id="exportPdf"><i class="fa-solid fa-file-pdf text-neon-red me-2"></i> PDF (.pdf)</a></li>
                 </ul>
             </div>
         </div>
@@ -58,11 +58,11 @@
 </div>
 
 <!-- Threats Table Grid -->
-<div class="card bg-dark-slate border border-slate rounded-3 p-4">
+<div class="glass-panel p-4">
     <div class="table-responsive">
         <table class="table table-dark table-hover align-middle border-0 m-0" id="threatsTable">
             <thead>
-                <tr class="font-mono text-grey border-bottom border-slate" style="font-size: 0.75rem;">
+                <tr class="font-mono text-grey border-bottom border-glass" style="font-size: 0.75rem;">
                     <th>ID</th>
                     <th>Type</th>
                     <th>Source IP</th>
@@ -80,7 +80,7 @@
             <tbody class="font-mono" style="font-size: 0.8rem;">
                 <tr>
                     <td colspan="10" class="text-center py-5 text-grey">
-                        <i class="fa-solid fa-spinner fa-spin fa-lg me-2"></i> Loading threat intelligence database...
+                        <i class="fa-solid fa-spinner fa-spin fa-lg me-2 text-neon-cyan"></i> Loading threat intelligence database...
                     </td>
                 </tr>
             </tbody>
@@ -88,9 +88,9 @@
     </div>
 
     <!-- Pagination footer -->
-    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3 border-top border-slate pt-3 mt-3">
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3 border-top border-glass pt-3 mt-3">
         <div class="text-grey font-mono" style="font-size: 0.75rem;">
-            Showing threat alerts <span id="paginatorStart">0</span> - <span id="paginatorEnd">0</span> of <span id="paginatorTotal">0</span> entries
+            Showing threat alerts <span id="paginatorStart" class="tabular-nums">0</span> - <span id="paginatorEnd" class="tabular-nums">0</span> of <span id="paginatorTotal" class="tabular-nums">0</span> entries
         </div>
         <nav aria-label="Threat page navigation">
             <ul class="pagination pagination-sm m-0" id="threatPagination">
@@ -105,19 +105,20 @@
 <!-- Threat Details Modal -->
 <div class="modal fade" id="threatDetailsModal" tabindex="-1" aria-labelledby="threatDetailsModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content bg-dark-slate border border-slate text-slate-light">
-            <div class="modal-header border-bottom border-slate bg-darker-slate">
-                <h5 class="modal-title font-weight-bold text-white" id="threatDetailsModalLabel"><i class="fa-solid fa-shield-halved text-neon-cyan"></i> Threat Event Details</h5>
+        <div class="modal-content glass-panel text-slate-light">
+            <div class="modal-header border-bottom border-glass">
+                <h5 class="modal-title font-weight-bold text-white" id="threatDetailsModalLabel"><i class="fa-solid fa-shield-halved text-neon-cyan me-2"></i> Threat Event Details</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body font-mono" style="font-size: 0.85rem;" id="threatDetailsContent">
                 <!-- Loaded dynamically -->
             </div>
-            <div class="modal-footer border-top border-slate bg-darker-slate">
+            <div class="modal-footer border-top border-glass">
                 <button type="button" class="btn btn-outline-cyan font-weight-bold" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
+</div>
 </div>
 {% endblock %}
 

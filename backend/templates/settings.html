@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+
+{% block title %}Settings - AI Threat Monitor{% endblock %}
+{% block header_title %}System Settings Console{% endblock %}
+
+{% block content %}
+<div class="glass-panel p-4">
+    <h5 class="text-white font-weight-bold border-bottom border-glass pb-3 mb-4">
+        <i class="fa-solid fa-sliders text-neon-cyan me-2"></i> Detection Thresholds & System Parameters
+    </h5>
+
+    <form id="settingsForm" class="font-mono" style="font-size: 0.85rem;">
+        <div class="row g-4">
+            
+            <!-- SMTP Configuration Section -->
+            <div class="col-12 col-lg-6">
+                <div class="glass-panel p-4 h-100">
+                    <h6 class="text-white font-weight-bold border-bottom border-glass pb-2 mb-3">
+                        <i class="fa-solid fa-envelope text-neon-cyan me-1"></i> SMTP Threat Email Notifier
+                    </h6>
+                    
+                    <div class="mb-3 form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="SEND_EMAIL_NOTIFICATIONS">
+                        <label class="form-check-label text-white" for="SEND_EMAIL_NOTIFICATIONS">Enable Email Notifications</label>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="MAIL_SERVER" class="form-label text-grey text-uppercase" style="font-size: 0.7rem;">SMTP Mail Server</label>
+                        <input type="text" class="form-control border border-slate bg-dark-slate text-white" id="MAIL_SERVER" required>
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label for="MAIL_PORT" class="form-label text-grey text-uppercase" style="font-size: 0.7rem;">SMTP Port</label>
+                            <input type="number" class="form-control border border-slate bg-dark-slate text-white" id="MAIL_PORT" required>
+                        </div>
+                        <div class="col-6 d-flex align-items-end pb-1.5">
+                            <div class="w-100 ps-2">
+                                <div class="form-check form-check-inline mb-2">
+                                    <input class="form-check-input" type="checkbox" id="MAIL_USE_TLS">
+                                    <label class="form-check-label text-white" for="MAIL_USE_TLS" style="font-size: 0.75rem;">TLS</label>
+                                </div>
+                                <div class="form-check form-check-inline mb-2">
+                                    <input class="form-check-input" type="checkbox" id="MAIL_USE_SSL">
+                                    <label class="form-check-label text-white" for="MAIL_USE_SSL" style="font-size: 0.75rem;">SSL</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="MAIL_USERNAME" class="form-label text-grey text-uppercase" style="font-size: 0.7rem;">Mail Username</label>
+                        <input type="text" class="form-control border border-slate bg-dark-slate text-white" id="MAIL_USERNAME">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="MAIL_PASSWORD" class="form-label text-grey text-uppercase" style="font-size: 0.7rem;">Mail Password</label>
+                        <input type="password" class="form-control border border-slate bg-dark-slate text-white" id="MAIL_PASSWORD" placeholder="SMTP Password">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="MAIL_DEFAULT_SENDER" class="form-label text-grey text-uppercase" style="font-size: 0.7rem;">Default Sender address</label>
+                        <input type="email" class="form-control border border-slate bg-dark-slate text-white" id="MAIL_DEFAULT_SENDER" required>
+                    </div>
+
+                    <div class="mb-2">
+                        <label for="ADMIN_EMAIL" class="form-label text-grey text-uppercase" style="font-size: 0.7rem;">Administrator Alert recipient</label>
+                        <input type="email" class="form-control border border-slate bg-dark-slate text-white" id="ADMIN_EMAIL" required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sniffer and Threshold Configuration Section -->
+            <div class="col-12 col-lg-6">
+                <div class="d-flex flex-column gap-4 h-100">
+                    
+                    <!-- Network Sniffer Settings -->
+                    <div class="border border-slate p-4 rounded bg-darker-slate">
+                        <h6 class="text-white font-weight-bold border-bottom border-slate pb-2 mb-3">
+                            <i class="fa-solid fa-network-wired text-neon-cyan me-1"></i> Packet sniffer core configuration
+                        </h6>
+                        
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="SNIFFER_SIMULATION">
+                            <label class="form-check-label text-white" for="SNIFFER_SIMULATION">Simulation Mode (Simulate network activity)</label>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="SNIFFER_INTERFACE" class="form-label text-grey text-uppercase" style="font-size: 0.7rem;">Listening interface</label>
+                            <input type="text" class="form-control border border-slate bg-dark-slate text-white" id="SNIFFER_INTERFACE" placeholder="Default adapter (e.g. eth0, Wi-Fi)">
+                            <small class="text-grey" style="font-size: 0.7rem;">Leave blank to auto-detect the default active interface</small>
+                        </div>
+
+                        <div class="mb-2">
+                            <label for="SNIFFER_SIMULATION_INTERVAL" class="form-label text-grey text-uppercase" style="font-size: 0.7rem;">Simulation packet interval (seconds)</label>
+                            <input type="number" step="0.05" min="0.05" class="form-control border border-slate bg-dark-slate text-white" id="SNIFFER_SIMULATION_INTERVAL" required>
+                        </div>
+                    </div>
+
+                    <!-- Threat Detection Thresholds -->
+                    <div class="border border-slate p-4 rounded bg-darker-slate flex-grow-1">
+                        <h6 class="text-white font-weight-bold border-bottom border-slate pb-2 mb-3">
+                            <i class="fa-solid fa-shield-halved text-neon-green me-1"></i> Heuristic Threat thresholds
+                        </h6>
+                        
+                        <div class="mb-3">
+                            <label for="DDOS_THRESHOLD" class="form-label text-grey text-uppercase" style="font-size: 0.7rem;">DDoS Volumetric threshold (packets/sec)</label>
+                            <input type="number" min="10" class="form-control border border-slate bg-dark-slate text-white" id="DDOS_THRESHOLD" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="PORTSCAN_THRESHOLD" class="form-label text-grey text-uppercase" style="font-size: 0.7rem;">Port Scan unique target ports (10s window)</label>
+                            <input type="number" min="2" class="form-control border border-slate bg-dark-slate text-white" id="PORTSCAN_THRESHOLD" required>
+                        </div>
+
+                        <div class="mb-2">
+                            <label for="BRUTEFORCE_THRESHOLD" class="form-label text-grey text-uppercase" style="font-size: 0.7rem;">Brute Force connection attempts (1m window)</label>
+                            <input type="number" min="2" class="form-control border border-slate bg-dark-slate text-white" id="BRUTEFORCE_THRESHOLD" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
+        <div class="mt-4 border-top border-slate pt-3 d-flex justify-content-end">
+            <button type="submit" class="btn btn-neon-green font-weight-bold px-4 py-2 d-flex align-items-center gap-2">
+                <i class="fa-solid fa-floppy-disk"></i>
+                <span>SAVE CONFIGURATIONS</span>
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const settingsForm = document.getElementById("settingsForm");
+
+        // Load settings from backend API
+        async function loadSettings() {
+            try {
+                const response = await fetch('/api/settings');
+                if (!response.ok) throw new Error("Failed to load settings.");
+
+                const settings = await response.json();
+
+                // Bind to controls
+                for (const [key, value] of Object.entries(settings)) {
+                    const el = document.getElementById(key);
+                    if (el) {
+                        if (el.type === 'checkbox') {
+                            el.checked = value.toLowerCase() === 'true' || value === '1' || value === true;
+                        } else {
+                            el.value = value;
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("Failed to fetch settings from database.", "danger");
+            }
+        }
+
+        // Handle settings save
+        settingsForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const token = document.getElementById("globalCsrfToken").value;
+            
+            // Build keys
+            const keys = [
+                'MAIL_SERVER', 'MAIL_PORT', 'MAIL_USE_TLS', 'MAIL_USE_SSL',
+                'MAIL_USERNAME', 'MAIL_PASSWORD', 'MAIL_DEFAULT_SENDER',
+                'ADMIN_EMAIL', 'SEND_EMAIL_NOTIFICATIONS',
+                'SNIFFER_INTERFACE', 'SNIFFER_SIMULATION', 'SNIFFER_SIMULATION_INTERVAL',
+                'DDOS_THRESHOLD', 'PORTSCAN_THRESHOLD', 'BRUTEFORCE_THRESHOLD'
+            ];
+
+            const payload = {};
+            keys.forEach(k => {
+                const el = document.getElementById(k);
+                if (el) {
+                    if (el.type === 'checkbox') {
+                        payload[k] = el.checked ? 'TRUE' : 'FALSE';
+                    } else {
+                        payload[k] = el.value.trim();
+                    }
+                }
+            });
+
+            try {
+                const response = await fetch('/api/settings', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-Token': token
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+                if (response.ok && data.success) {
+                    showToast(data.message, "success");
+                    loadSettings(); // refresh
+                } else {
+                    showToast(data.message || "Failed to save settings.", "danger");
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("Failed to reach settings API endpoint.", "danger");
+            }
+        });
+
+        // Initialize settings load
+        loadSettings();
+    });
+</script>
+{% endblock %}

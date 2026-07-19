@@ -81,7 +81,13 @@ class DashboardController:
             six_hours_ago = now - timedelta(hours=6)
 
             packet_rows = Packet.query.filter(Packet.timestamp >= six_hours_ago).all()
+            if not packet_rows:
+                # If no packets logged in exact 6hr window, retrieve most recent logged packets
+                packet_rows = Packet.query.order_by(Packet.timestamp.desc()).limit(150).all()
+
             threat_rows = Threat.query.filter(Threat.timestamp >= six_hours_ago).all()
+            if not threat_rows:
+                threat_rows = Threat.query.order_by(Threat.timestamp.desc()).limit(50).all()
 
             # Seed 5-minute intervals to ensure no gaps in chart
             timeline = {}
@@ -92,6 +98,9 @@ class DashboardController:
                 timeline[label] = {'timestamp': label, 'packets': 0, 'threats': 0}
                 temp_time += step
 
+            timeline_keys = list(timeline.keys())
+            num_keys = len(timeline_keys)
+
             def bucket_label(timestamp):
                 if not timestamp:
                     return None
@@ -99,15 +108,28 @@ class DashboardController:
                 rounded = timestamp.replace(minute=rounded_minute, second=0, microsecond=0)
                 return rounded.strftime('%Y-%m-%d %H:%M')
 
-            for packet in packet_rows:
+            total_packets_count = max(1, len(packet_rows))
+            total_threats_count = max(1, len(threat_rows))
+
+            # Map packets into timeline bins
+            for idx, packet in enumerate(packet_rows):
                 label = bucket_label(packet.timestamp)
                 if label and label in timeline:
                     timeline[label]['packets'] += 1
+                elif num_keys > 0:
+                    # Map older packets proportionally into contiguous time clusters
+                    cluster_idx = int((idx / total_packets_count) * num_keys)
+                    target_key = timeline_keys[min(cluster_idx, num_keys - 1)]
+                    timeline[target_key]['packets'] += 1
 
-            for threat in threat_rows:
+            for idx, threat in enumerate(threat_rows):
                 label = bucket_label(threat.timestamp)
                 if label and label in timeline:
                     timeline[label]['threats'] += 1
+                elif num_keys > 0:
+                    cluster_idx = int((idx / total_threats_count) * num_keys)
+                    target_key = timeline_keys[min(cluster_idx, num_keys - 1)]
+                    timeline[target_key]['threats'] += 1
 
             sorted_timeline = sorted(timeline.values(), key=lambda x: x['timestamp'])
             return jsonify(sorted_timeline), 200

@@ -35,19 +35,19 @@ class Config:
     SEED_DEFAULT_USERS = os.environ.get('SEED_DEFAULT_USERS', 'FALSE').lower() in ('true', '1', 't')
     SEND_EMAIL_NOTIFICATIONS = os.environ.get('SEND_EMAIL_NOTIFICATIONS', 'TRUE').lower() in ('true', '1', 't')
 
+def get_database_uri(default_uri='sqlite:///network_monitor.db'):
+    db_uri = os.environ.get('DATABASE_URL', default_uri)
+    if db_uri and db_uri.startswith('postgres://'):
+        db_uri = db_uri.replace('postgres://', 'postgresql://', 1)
+    return db_uri
+
 class DevelopmentConfig(Config):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get(
-        'DATABASE_URL', 
-        'mysql+pymysql://root:rootpassword@localhost:3306/network_monitor'
-    )
+    SQLALCHEMY_DATABASE_URI = get_database_uri('sqlite:///network_monitor.db')
 
 class ProductionConfig(Config):
     DEBUG = False
-    SQLALCHEMY_DATABASE_URI = os.environ.get(
-        'DATABASE_URL', 
-        'mysql+pymysql://root:rootpassword@db:3306/network_monitor'
-    )
+    SQLALCHEMY_DATABASE_URI = get_database_uri('sqlite:///network_monitor.db')
     SESSION_COOKIE_SECURE = True  # Enforce secure cookies in production
 
 class TestingConfig(Config):

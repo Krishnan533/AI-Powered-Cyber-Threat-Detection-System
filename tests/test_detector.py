@@ -23,13 +23,14 @@ def test_ddos_detection_rule(app):
         src_ip = "192.168.10.99"
         
         # Log 110 packets in under 1 second from the same IP
+        now = datetime.utcnow()
         for _ in range(110):
             p = Packet(
                 src_ip=src_ip,
                 dst_ip="192.168.10.1",
                 protocol="UDP",
                 packet_size=1000,
-                timestamp=datetime.utcnow()
+                timestamp=now
             )
             # Run detection (sliding window tracks it)
             detector.process_packet(p)

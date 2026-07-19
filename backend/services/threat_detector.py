@@ -70,15 +70,16 @@ class ThreatDetector:
         while self.packet_timestamps[src_ip] and self.packet_timestamps[src_ip][0] < curr_ts - 1.0:
             self.packet_timestamps[src_ip].popleft()
             
-        # Threshold: More than 100 packets/sec
-        if len(self.packet_timestamps[src_ip]) > 100:
+        # Threshold: More than DDoS threshold packets/sec
+        ddos_threshold = self.app.config.get('DDOS_THRESHOLD', 100) if self.app else 100
+        if len(self.packet_timestamps[src_ip]) > ddos_threshold:
             self._trigger_threat(
                 threat_type="DDoS",
                 source_ip=src_ip,
                 destination_ip=dst_ip,
                 severity_score=9.5,
                 severity_level="Critical",
-                description=f"DDoS volumetric flood: {len(self.packet_timestamps[src_ip])} packets/sec from source IP.",
+                description=f"DDoS volumetric flood: {len(self.packet_timestamps[src_ip])} packets/sec from source IP (threshold: {ddos_threshold}).",
                 ai_detected=False
             )
 
@@ -102,14 +103,15 @@ class ThreatDetector:
                 
             # Check unique port counts in the last 10 seconds
             unique_ports = len(self.scanned_ports[src_ip])
-            if unique_ports >= 15:
+            portscan_threshold = self.app.config.get('PORTSCAN_THRESHOLD', 15) if self.app else 15
+            if unique_ports >= portscan_threshold:
                 self._trigger_threat(
                     threat_type="Port Scan",
                     source_ip=src_ip,
                     destination_ip=dst_ip,
                     severity_score=8.0,
                     severity_level="High",
-                    description=f"Port scanning pattern: scanned {unique_ports} unique ports in 10 seconds.",
+                    description=f"Port scanning pattern: scanned {unique_ports} unique ports in 10 seconds (threshold: {portscan_threshold}).",
                     ai_detected=False
                 )
 
@@ -125,17 +127,19 @@ class ThreatDetector:
                 while self.failed_auth_attempts[src_ip] and self.failed_auth_attempts[src_ip][0] < curr_ts - 60.0:
                     self.failed_auth_attempts[src_ip].popleft()
                     
-                # Threshold: > 10 attempts in 1 minute to authentication services
-                if len(self.failed_auth_attempts[src_ip]) > 10:
+                # Threshold: > Brute force threshold attempts in 1 minute to authentication services
+                bruteforce_threshold = self.app.config.get('BRUTEFORCE_THRESHOLD', 10) if self.app else 10
+                if len(self.failed_auth_attempts[src_ip]) > bruteforce_threshold:
                     self._trigger_threat(
                         threat_type="Brute Force",
                         source_ip=src_ip,
                         destination_ip=dst_ip,
                         severity_score=7.5,
                         severity_level="High",
-                        description=f"Suspicious brute force sequence: {len(self.failed_auth_attempts[src_ip])} connection attempts targeting auth port {dport} in 1 min.",
+                        description=f"Suspicious brute force sequence: {len(self.failed_auth_attempts[src_ip])} connection attempts targeting auth port {dport} in 1 min (threshold: {bruteforce_threshold}).",
                         ai_detected=False
                     )
+
 
         # 4. Malware Traffic Detection
         # Check signature ports or payload signatures

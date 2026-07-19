@@ -12,5 +12,8 @@ python-dotenv==1.0.1
 pymysql==1.1.1
 cryptography==42.0.8
 reportlab==4.2.0
-pytest==8.2.2
+PyJWT==2.8.0
 joblib==1.4.2
+pytest==8.2.2
+psycopg2-binary==2.9.9
+gunicorn==22.0.0

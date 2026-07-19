@@ -47,9 +47,11 @@ def csrf_protect(f):
         if request.method in ('GET', 'HEAD', 'OPTIONS', 'TRACE'):
             return f(*args, **kwargs)
 
-        # Allow write actions during tests without CSRF token because test clients do not generate front-end tokens.
-        if current_app.config.get('TESTING'):
+        # Allow write actions during tests or if request is authenticated via JWT Bearer token.
+        auth_header = request.headers.get('Authorization')
+        if current_app.config.get('TESTING') or (auth_header and auth_header.startswith('Bearer ')):
             return f(*args, **kwargs)
+
             
         token = request.headers.get('X-CSRF-Token') or request.form.get('csrf_token')
         session_token = session.get('csrf_token')

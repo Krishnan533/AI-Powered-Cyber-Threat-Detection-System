@@ -4,9 +4,9 @@
 {% block header_title %}Operations Audits Desk{% endblock %}
 
 {% block content %}
-<div class="card bg-dark-slate border border-slate rounded-3 p-4">
+<div class="glass-panel p-4">
     <!-- Log Category Navigation Tabs -->
-    <ul class="nav nav-tabs border-slate mb-4 font-mono" id="logTab" role="tablist">
+    <ul class="nav nav-tabs border-glass mb-4 font-mono" id="logTab" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link active" id="audit-tab" data-bs-toggle="tab" data-bs-target="#audit-pane" type="button" role="tab" aria-controls="audit-pane" aria-selected="true">
                 <i class="fa-solid fa-clipboard-user me-2"></i> Audit Logs
@@ -29,14 +29,14 @@
             <div class="row g-3 align-items-end mb-4">
                 <div class="col-12 col-md-4">
                     <label for="auditSearch" class="form-label text-grey font-mono text-uppercase" style="font-size: 0.7rem;">Keyword Search</label>
-                    <div class="input-group border border-slate rounded bg-darker-slate overflow-hidden">
-                        <span class="input-group-text border-0 bg-transparent text-grey"><i class="fa-solid fa-magnifying-glass"></i></span>
-                        <input type="text" class="form-control border-0 bg-transparent text-white font-mono" id="auditSearch" placeholder="Search logs payload...">
+                    <div class="input-group">
+                        <span class="input-group-text border-glass bg-transparent text-grey"><i class="fa-solid fa-magnifying-glass"></i></span>
+                        <input type="text" class="form-control font-mono" id="auditSearch" placeholder="Search logs payload...">
                     </div>
                 </div>
                 <div class="col-12 col-sm-6 col-md-3">
                     <label for="auditActionFilter" class="form-label text-grey font-mono text-uppercase" style="font-size: 0.7rem;">Action Type</label>
-                    <select class="form-select border border-slate bg-darker-slate text-white font-mono" id="auditActionFilter">
+                    <select class="form-select font-mono" id="auditActionFilter">
                         <option value="">ALL ACTIONS</option>
                     </select>
                 </div>

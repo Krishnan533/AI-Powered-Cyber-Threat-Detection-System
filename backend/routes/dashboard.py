@@ -4,7 +4,6 @@ from backend.middlewares.auth_middleware import login_required, roles_required, 
 
 dashboard_bp = Blueprint('dashboard', __name__)
 
-@dashboard_bp.route('/', methods=['GET'])
 @dashboard_bp.route('/dashboard', methods=['GET'])
 @login_required
 def dashboard_view():
