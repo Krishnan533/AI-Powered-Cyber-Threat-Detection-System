@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHIELD_IDS — Technical Documentation & API Reference</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <!-- Custom Design Token Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .code-snippet {
+            background: #05080D;
+            border: 1px solid rgba(0, 229, 255, 0.2);
+            border-radius: 8px;
+            padding: 1rem;
+            color: #00E5FF;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+        }
+        .api-badge-get { background: rgba(0, 229, 255, 0.15); color: #00E5FF; border: 1px solid #00E5FF; }
+        .api-badge-post { background: rgba(0, 230, 118, 0.15); color: #00E676; border: 1px solid #00E676; }
+        .api-badge-delete { background: rgba(255, 59, 92, 0.15); color: #FF3B5C; border: 1px solid #FF3B5C; }
+    </style>
+</head>
+<body>
+
+    <!-- Sticky Glass Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top glassmorphism border-bottom border-glass py-3">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-3" href="/">
+                <div class="brand-logo bg-neon-cyan text-dark d-flex align-items-center justify-content-center rounded-circle" style="width: 40px; height: 40px;">
+                    <i class="fa-solid fa-shield-halved fa-lg"></i>
+                </div>
+                <div>
+                    <span class="h5 m-0 font-weight-bold text-white tracking-wide brand-title">SHIELD_IDS</span>
+                    <span class="badge bg-neon-cyan-outline ms-2">DOCUMENTATION</span>
+                </div>
+            </a>
+
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
+                <i class="fa-solid fa-bars text-neon-cyan"></i>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navContent">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-lg-4">
+                    <li class="nav-item"><a class="nav-link text-white" href="/">Home</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="/about">Project Overview</a></li>
+                    <li class="nav-item"><a class="nav-link active text-neon-cyan" href="/docs">Documentation</a></li>
+                </ul>
+
+                <div class="d-flex align-items-center gap-3">
+                    <a href="/login" class="btn btn-outline-cyan px-4 py-2">LOG IN</a>
+                    <a href="/dashboard" class="btn btn-neon-cyan px-4 py-2">SOC CONSOLE</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    </nav>
+
+    <!-- Header -->
+    <section class="pt-5 mt-5 pb-4">
+        <div class="container pt-5">
+            <div class="text-center max-w-800 mx-auto">
+                <span class="badge bg-neon-cyan-outline mb-2">SYSTEM MANUAL & REPO GUIDE</span>
+                <h1 class="display-4 font-weight-bold text-white mb-3">System Documentation</h1>
+                <p class="lead text-grey mb-4">Complete operational guide for installation, deployment, environment configuration, database management, and REST API specification.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Content Sections -->
+    <section class="pb-5">
+        <div class="container">
+            <div class="row g-4">
+                <!-- Sidebar Nav -->
+                <div class="col-lg-3">
+                    <div class="glass-panel p-3 sticky-top" style="top: 100px;">
+                        <h6 class="text-white font-weight-bold mb-3 border-bottom border-glass pb-2"><i class="fa-solid fa-book-bookmark text-neon-cyan me-2"></i>CONTENTS</h6>
+                        <ul class="nav flex-column gap-2 font-mono" style="font-size: 0.85rem;">
+                            <li><a href="#quickstart" class="text-grey text-decoration-none hover-cyan"><i class="fa-solid fa-rocket me-2"></i>Quickstart & Install</a></li>
+                            <li><a href="#deployment" class="text-grey text-decoration-none hover-cyan"><i class="fa-solid fa-cloud-arrow-up me-2"></i>Render Deployment</a></li>
+                            <li><a href="#envvars" class="text-grey text-decoration-none hover-cyan"><i class="fa-solid fa-key me-2"></i>Environment Vars</a></li>
+                            <li><a href="#apiref" class="text-grey text-decoration-none hover-cyan"><i class="fa-solid fa-code me-2"></i>API Documentation</a></li>
+                            <li><a href="#faq" class="text-grey text-decoration-none hover-cyan"><i class="fa-solid fa-circle-question me-2"></i>Troubleshooting & FAQ</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="col-lg-9">
+                    <!-- 1. Quickstart -->
+                    <div id="quickstart" class="glass-panel p-4 mb-4">
+                        <h3 class="text-white font-weight-bold mb-3 d-flex align-items-center gap-2">
+                            <i class="fa-solid fa-rocket text-neon-cyan"></i> 1. Quickstart & Local Setup
+                        </h3>
+                        <p class="text-grey">Follow these steps to run SHIELD_IDS on your local development machine:</p>
+                        
+                        <h6 class="text-white font-mono mt-3">Step 1: Clone Repository & Create Virtual Environment</h6>
+                        <div class="code-snippet mb-3">
+git clone https://github.com/Krishnan533/AI-Powered-Cyber-Threat-Detection-System.git
+cd mini-project
+python -m venv venv
+# On Windows:
+.\venv\Scripts\activate
+# On Linux/macOS:
+source venv/bin/activate
+                        </div>
+
+                        <h6 class="text-white font-mono mt-3">Step 2: Install Dependencies</h6>
+                        <div class="code-snippet mb-3">
+pip install -r requirements.txt
+                        </div>
+
+                        <h6 class="text-white font-mono mt-3">Step 3: Launch Local Application</h6>
+                        <div class="code-snippet mb-3">
+python wsgi.py
+                        </div>
+                        <p class="text-grey small">The application will boot on <code>http://localhost:5000</code> with default SQLite database setup.</p>
+                    </div>
+
+                    <!-- 2. Render Deployment -->
+                    <div id="deployment" class="glass-panel p-4 mb-4">
+                        <h3 class="text-white font-weight-bold mb-3 d-flex align-items-center gap-2">
+                            <i class="fa-solid fa-cloud-arrow-up text-neon-green"></i> 2. Render Deployment Guide
+                        </h3>
+                        <p class="text-grey">Configured for seamless deployment on Render Web Services:</p>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-dark border-glass font-mono small">
+                                <thead>
+                                    <tr>
+                                        <th>Setting</th>
+                                        <th>Configured Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Runtime Environment</td>
+                                        <td>Python 3.11.9</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Build Command</td>
+                                        <td><code>pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Start Command</td>
+                                        <td><code>gunicorn -c gunicorn.conf.py wsgi:app</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Database Engine</td>
+                                        <td>PostgreSQL (Render PostgreSQL Managed Instance)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 3. Environment Variables -->
+                    <div id="envvars" class="glass-panel p-4 mb-4">
+                        <h3 class="text-white font-weight-bold mb-3 d-flex align-items-center gap-2">
+                            <i class="fa-solid fa-key text-neon-amber"></i> 3. Environment Variables
+                        </h3>
+                        <div class="code-snippet">
+FLASK_ENV=production
+PYTHONPATH=.
+PYTHON_VERSION=3.11.9
+SECRET_KEY=your_generated_secret_key
+DATABASE_URL=postgresql://user:pass@host:5432/dbname
+SNIFFER_SIMULATION=TRUE
+SEND_EMAIL_NOTIFICATIONS=TRUE
+ADMIN_EMAIL=admin-alerts@example.com
+                        </div>
+                    </div>
+
+                    <!-- 4. API Reference -->
+                    <div id="apiref" class="glass-panel p-4 mb-4">
+                        <h3 class="text-white font-weight-bold mb-3 d-flex align-items-center gap-2">
+                            <i class="fa-solid fa-code text-neon-blue"></i> 4. REST API Specification
+                        </h3>
+                        
+                        <div class="d-flex flex-column gap-3">
+                            <div class="border border-glass rounded p-3 bg-darker-slate">
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <span class="badge api-badge-post px-2 py-1">POST</span>
+                                    <code class="text-white font-mono">/api/auth/register</code>
+                                </div>
+                                <p class="text-grey m-0 small">Registers a new user account with role assignment (Viewer/Analyst/Admin).</p>
+                            </div>
+
+                            <div class="border border-glass rounded p-3 bg-darker-slate">
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <span class="badge api-badge-post px-2 py-1">POST</span>
+                                    <code class="text-white font-mono">/api/auth/login</code>
+                                </div>
+                                <p class="text-grey m-0 small">Authenticates username and password, returning JWT bearer token and setting session cookies.</p>
+                            </div>
+
+                            <div class="border border-glass rounded p-3 bg-darker-slate">
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <span class="badge api-badge-get px-2 py-1">GET</span>
+                                    <code class="text-white font-mono">/api/dashboard/stats</code>
+                                </div>
+                                <p class="text-grey m-0 small">Returns system-wide packet counts, threat severities, active firewall rules, and hourly telemetry.</p>
+                            </div>
+
+                            <div class="border border-glass rounded p-3 bg-darker-slate">
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <span class="badge api-badge-get px-2 py-1">GET</span>
+                                    <code class="text-white font-mono">/api/threats</code>
+                                </div>
+                                <p class="text-grey m-0 small">Fetches recorded threat events with filtering by severity, status, and IP address.</p>
+                            </div>
+
+                            <div class="border border-glass rounded p-3 bg-darker-slate">
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <span class="badge api-badge-post px-2 py-1">POST</span>
+                                    <code class="text-white font-mono">/api/blocked-ips</code>
+                                </div>
+                                <p class="text-grey m-0 small">Manually creates a firewall containment rule to block a malicious IP.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 5. FAQ -->
+                    <div id="faq" class="glass-panel p-4 mb-4">
+                        <h3 class="text-white font-weight-bold mb-3 d-flex align-items-center gap-2">
+                            <i class="fa-solid fa-circle-question text-neon-red"></i> 5. Troubleshooting & FAQ
+                        </h3>
+                        
+                        <div class="accordion accordion-flush" id="faqAccordion">
+                            <div class="accordion-item bg-transparent text-white border-bottom border-glass">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed bg-transparent text-white font-mono" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                        Q: Why is SNIFFER_SIMULATION set to TRUE on Render?
+                                    </button>
+                                </h2>
+                                <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body text-grey">
+                                        Render web service containers run as unprivileged non-root users. Live network socket sniffing requires root privileges (<code>CAP_NET_RAW</code>). Setting <code>SNIFFER_SIMULATION=TRUE</code> allows the system to generate mock traffic, DDoS spikes, port scans, and AI anomalies cleanly for SOC telemetry without socket errors.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="accordion-item bg-transparent text-white border-bottom border-glass">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed bg-transparent text-white font-mono" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                        Q: How does SQLite vs PostgreSQL detection work?
+                                    </button>
+                                </h2>
+                                <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body text-grey">
+                                        The application inspects <code>DATABASE_URL</code> at startup. If present (PostgreSQL on Render), it automatically normalizes <code>postgres://</code> to <code>postgresql://</code>. If absent, it automatically resolves absolute local paths for SQLite in <code>instance/network_monitor.db</code>.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-4 border-top border-glass text-center text-grey" style="font-size: 0.85rem;">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div>&copy; 2026 SHIELD_IDS Security Operations. All Rights Reserved.</div>
+                <div class="d-flex gap-3 font-mono">
+                    <a href="/" class="text-grey text-decoration-none">Home</a>
+                    <span>•</span>
+                    <a href="/about" class="text-grey text-decoration-none">About</a>
+                    <span>•</span>
+                    <a href="/dashboard" class="text-neon-cyan text-decoration-none">SOC Console</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/cursor.js') }}"></script>
+</body>
+</html>

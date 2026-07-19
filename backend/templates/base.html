@@ -79,7 +79,20 @@
                     </a>
                 </li>
                 {% endif %}
+                <li class="nav-item">
+                    <a href="/about" class="nav-link py-3 px-3 d-flex align-items-center gap-3 {% if request.path == '/about' %}active{% endif %}">
+                        <i class="fa-solid fa-circle-info text-center" style="width: 20px;"></i>
+                        <span>Project Overview</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/docs" class="nav-link py-3 px-3 d-flex align-items-center gap-3 {% if request.path == '/docs' %}active{% endif %}">
+                        <i class="fa-solid fa-book text-center" style="width: 20px;"></i>
+                        <span>Documentation</span>
+                    </a>
+                </li>
             </ul>
+
 
             <div class="sidebar-footer p-3 border-top border-glass bg-darker-slate d-flex flex-column gap-3">
                 <div class="d-flex align-items-center gap-3">
@@ -164,7 +177,9 @@
         </main>
     </div>
 
+    <div id="sidebarBackdrop" class="sidebar-backdrop"></div>
     <!-- Dynamic Toast Container -->
+
     <div id="toastContainer"></div>
 
     <input type="hidden" id="globalCsrfToken" value="{{ csrf_token }}">

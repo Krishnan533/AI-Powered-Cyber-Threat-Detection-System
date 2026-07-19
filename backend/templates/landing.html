@@ -20,13 +20,14 @@
             position: relative;
             display: flex;
             align-items: center;
-            padding-top: 80px;
+            padding-top: 90px;
+            padding-bottom: 60px;
             overflow: hidden;
         }
 
         #heroGlobeContainer {
             width: 100%;
-            height: 580px;
+            height: 540px;
             position: relative;
         }
 
@@ -39,9 +40,9 @@
             animation: floatAnim 4s ease-in-out infinite alternate;
         }
 
-        .stat-card-1 { top: 15%; right: 10%; animation-delay: 0s; }
-        .stat-card-2 { bottom: 20%; left: 5%; animation-delay: 1.5s; }
-        .stat-card-3 { bottom: 12%; right: 15%; animation-delay: 2.5s; }
+        .stat-card-1 { top: 10%; right: 5%; animation-delay: 0s; }
+        .stat-card-2 { bottom: 15%; left: 2%; animation-delay: 1.5s; }
+        .stat-card-3 { bottom: 8%; right: 10%; animation-delay: 2.5s; }
 
         @keyframes floatAnim {
             0% { transform: translateY(0px); }
@@ -60,6 +61,29 @@
             color: var(--accent-cyan);
             font-size: 1.25rem;
             margin-bottom: 1.25rem;
+        }
+
+        .workflow-node {
+            background: rgba(13, 22, 35, 0.7);
+            border: 1px solid rgba(0, 229, 255, 0.2);
+            border-radius: 12px;
+            padding: 1.25rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .workflow-node:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.2);
+        }
+
+        .flow-arrow-icon {
+            color: var(--accent-cyan);
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
     </style>
 </head>
@@ -84,16 +108,17 @@
 
             <div class="collapse navbar-collapse" id="navContent">
                 <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-lg-4">
-                    <li class="nav-item"><a class="nav-link text-primary" href="#features">Capabilities</a></li>
-                    <li class="nav-item"><a class="nav-link text-primary" href="#architecture">Architecture</a></li>
-                    <li class="nav-item"><a class="nav-link text-primary" href="#analytics">ML Analytics</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="#features">Capabilities</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="#workflow">Workflow</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="/about">Architecture</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="/docs">Docs</a></li>
                 </ul>
 
                 <div class="d-flex align-items-center gap-3">
                     {% if is_logged_in %}
                     <a href="/dashboard" class="btn btn-neon-cyan px-4 py-2 d-flex align-items-center gap-2">
                         <i class="fa-solid fa-gauge-high"></i>
-                        <span>COMMAND DASHBOARD</span>
+                        <span>SOC DASHBOARD</span>
                     </a>
                     {% else %}
                     <a href="/login" class="btn btn-outline-cyan px-4 py-2">LOG IN</a>
@@ -122,7 +147,7 @@
                     </h1>
 
                     <p class="lead text-grey mb-4" style="max-width: 540px; font-size: 1.1rem;">
-                        Real-time packet capture, unsupervised Isolation Forest anomaly detection, and automated IP lock defenses unified in a live SOC Command Console.
+                        Real-time packet capture, unsupervised Isolation Forest anomaly detection, and automated IP containment unified in a live SOC Command Console.
                     </p>
 
                     <div class="d-flex flex-wrap align-items-center gap-3 pt-2">
@@ -132,12 +157,13 @@
                             <span>ENTER SOC CONSOLE</span>
                         </a>
                         {% else %}
-                        <a href="/login" class="btn btn-neon-cyan btn-lg px-4 py-3 d-flex align-items-center gap-3">
+                        <a href="/register" class="btn btn-neon-cyan btn-lg px-4 py-3 d-flex align-items-center gap-3">
                             <i class="fa-solid fa-shield-cat"></i>
-                            <span>LAUNCH DEMO DASHBOARD</span>
+                            <span>GET STARTED</span>
                         </a>
+                        <a href="/login" class="btn btn-outline-cyan btn-lg px-4 py-3">LOG IN</a>
                         {% endif %}
-                        <a href="#features" class="btn btn-outline-cyan btn-lg px-4 py-3">EXPLORE TELEMETRY</a>
+                        <a href="/about" class="btn btn-outline-cyan btn-lg px-4 py-3">LEARN MORE</a>
                     </div>
                 </div>
 
@@ -174,6 +200,90 @@
                                 <div class="h5 m-0 font-weight-bold tabular-nums text-white">99.4%</div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Real-life Workflow Pipeline Section -->
+    <section id="workflow" class="py-5 bg-darker-slate border-y border-glass">
+        <div class="container">
+            <div class="text-center mb-5">
+                <span class="badge bg-neon-cyan-outline mb-2">END-TO-END DEFENSE PIPELINE</span>
+                <h2 class="h2 text-white font-weight-bold">How SHIELD_IDS Protects Network Traffic</h2>
+            </div>
+
+            <div class="row g-2 align-items-center justify-content-center font-mono">
+                <div class="col-6 col-md-3 col-lg-2">
+                    <div class="workflow-node">
+                        <i class="fa-solid fa-globe text-neon-cyan fs-3 mb-2"></i>
+                        <div class="text-white small fw-bold">Internet</div>
+                        <span class="text-grey" style="font-size: 0.65rem;">Traffic Ingress</span>
+                    </div>
+                </div>
+                <div class="col-1 flow-arrow-icon d-none d-md-flex"><i class="fa-solid fa-arrow-right"></i></div>
+
+                <div class="col-6 col-md-3 col-lg-2">
+                    <div class="workflow-node">
+                        <i class="fa-solid fa-network-wired text-neon-cyan fs-3 mb-2"></i>
+                        <div class="text-white small fw-bold">Packet Capture</div>
+                        <span class="text-grey" style="font-size: 0.65rem;">Scapy Sniffer</span>
+                    </div>
+                </div>
+                <div class="col-1 flow-arrow-icon d-none d-lg-flex"><i class="fa-solid fa-arrow-right"></i></div>
+
+                <div class="col-6 col-md-3 col-lg-2">
+                    <div class="workflow-node">
+                        <i class="fa-solid fa-filter text-neon-amber fs-3 mb-2"></i>
+                        <div class="text-white small fw-bold">Threat Engine</div>
+                        <span class="text-grey" style="font-size: 0.65rem;">Heuristic Rules</span>
+                    </div>
+                </div>
+                <div class="col-1 flow-arrow-icon d-none d-md-flex"><i class="fa-solid fa-arrow-right"></i></div>
+
+                <div class="col-6 col-md-3 col-lg-2">
+                    <div class="workflow-node">
+                        <i class="fa-solid fa-brain text-neon-green fs-3 mb-2"></i>
+                        <div class="text-white small fw-bold">AI Analysis</div>
+                        <span class="text-grey" style="font-size: 0.65rem;">Isolation Forest</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-2 align-items-center justify-content-center mt-3 font-mono">
+                <div class="col-6 col-md-3 col-lg-2">
+                    <div class="workflow-node">
+                        <i class="fa-solid fa-shield-virus text-neon-red fs-3 mb-2"></i>
+                        <div class="text-white small fw-bold">Firewall</div>
+                        <span class="text-grey" style="font-size: 0.65rem;">Auto IP Lock</span>
+                    </div>
+                </div>
+                <div class="col-1 flow-arrow-icon d-none d-md-flex"><i class="fa-solid fa-arrow-right"></i></div>
+
+                <div class="col-6 col-md-3 col-lg-2">
+                    <div class="workflow-node">
+                        <i class="fa-solid fa-database text-neon-blue fs-3 mb-2"></i>
+                        <div class="text-white small fw-bold">Database</div>
+                        <span class="text-grey" style="font-size: 0.65rem;">Audit Telemetry</span>
+                    </div>
+                </div>
+                <div class="col-1 flow-arrow-icon d-none d-lg-flex"><i class="fa-solid fa-arrow-right"></i></div>
+
+                <div class="col-6 col-md-3 col-lg-2">
+                    <div class="workflow-node">
+                        <i class="fa-solid fa-desktop text-neon-cyan fs-3 mb-2"></i>
+                        <div class="text-white small fw-bold">SOC Dashboard</div>
+                        <span class="text-grey" style="font-size: 0.65rem;">Real-time Matrix</span>
+                    </div>
+                </div>
+                <div class="col-1 flow-arrow-icon d-none d-md-flex"><i class="fa-solid fa-arrow-right"></i></div>
+
+                <div class="col-6 col-md-3 col-lg-2">
+                    <div class="workflow-node">
+                        <i class="fa-solid fa-user-shield text-neon-green fs-3 mb-2"></i>
+                        <div class="text-white small fw-bold">SOC Admin</div>
+                        <span class="text-grey" style="font-size: 0.65rem;">Incident Control</span>
                     </div>
                 </div>
             </div>
@@ -232,6 +342,10 @@
                     <span>•</span>
                     <a href="/register" class="text-grey text-decoration-none">Register</a>
                     <span>•</span>
+                    <a href="/about" class="text-grey text-decoration-none">About</a>
+                    <span>•</span>
+                    <a href="/docs" class="text-grey text-decoration-none">Docs</a>
+                    <span>•</span>
                     <a href="/dashboard" class="text-neon-cyan text-decoration-none">SOC Console</a>
                 </div>
             </div>
@@ -240,6 +354,7 @@
 
     <!-- Three.js Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Custom Scripts -->
     <script src="{{ url_for('static', filename='js/cursor.js') }}"></script>
     <script src="{{ url_for('static', filename='js/globe.js') }}"></script>
@@ -249,7 +364,6 @@
                 window.ThreatGlobe.initHeroGlobe('heroGlobeContainer');
             }
 
-            // Animated metric counter on load
             function animateCount(id, target) {
                 const el = document.getElementById(id);
                 if (!el) return;

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHIELD_IDS — Project Information & System Architecture</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <!-- Custom Design Token Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .workflow-step-card {
+            position: relative;
+            background: rgba(13, 22, 35, 0.6);
+            border: 1px solid rgba(0, 229, 255, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        .workflow-step-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 10px 30px rgba(0, 229, 255, 0.15);
+        }
+        .flow-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-cyan);
+            font-size: 1.5rem;
+        }
+        .arch-badge {
+            background: rgba(0, 229, 255, 0.1);
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            color: var(--accent-cyan);
+            border-radius: 20px;
+            padding: 4px 14px;
+            font-size: 0.8rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sticky Glass Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top glassmorphism border-bottom border-glass py-3">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-3" href="/">
+                <div class="brand-logo bg-neon-cyan text-dark d-flex align-items-center justify-content-center rounded-circle" style="width: 40px; height: 40px;">
+                    <i class="fa-solid fa-shield-halved fa-lg"></i>
+                </div>
+                <div>
+                    <span class="h5 m-0 font-weight-bold text-white tracking-wide brand-title">SHIELD_IDS</span>
+                    <span class="badge bg-neon-cyan-outline ms-2">PROJECT ARCHITECTURE</span>
+                </div>
+            </a>
+
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
+                <i class="fa-solid fa-bars text-neon-cyan"></i>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navContent">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-lg-4">
+                    <li class="nav-item"><a class="nav-link text-white" href="/">Home</a></li>
+                    <li class="nav-item"><a class="nav-link active text-neon-cyan" href="/about">Project Overview</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="/docs">Documentation</a></li>
+                </ul>
+
+                <div class="d-flex align-items-center gap-3">
+                    <a href="/login" class="btn btn-outline-cyan px-4 py-2">LOG IN</a>
+                    <a href="/dashboard" class="btn btn-neon-cyan px-4 py-2">SOC CONSOLE</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header Hero -->
+    <section class="pt-5 mt-5 pb-4">
+        <div class="container pt-5">
+            <div class="text-center max-w-800 mx-auto">
+                <span class="arch-badge mb-3 d-inline-block"><i class="fa-solid fa-microchip me-1"></i> AI AUTONOMOUS DEFENSIVE PIPELINE</span>
+                <h1 class="display-4 font-weight-bold text-white mb-3">AI-Powered Cyber Threat Detection System</h1>
+                <p class="lead text-grey mb-4">
+                    SHIELD_IDS is an enterprise-grade, real-time intrusion detection and network security platform combining low-level packet sniffing heuristics with unsupervised Isolation Forest machine learning.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Real-life Workflow Pipeline -->
+    <section class="py-5 bg-darker-slate border-y border-glass">
+        <div class="container">
+            <div class="text-center mb-5">
+                <span class="badge bg-neon-cyan-outline mb-2">END-TO-END TELEMETRY FLOW</span>
+                <h2 class="h2 text-white font-weight-bold">Real-life Threat Containment Workflow</h2>
+            </div>
+
+            <div class="row g-3 align-items-center justify-content-center font-mono">
+                <div class="col-6 col-md-3 col-lg-2">
+                    <div class="workflow-step-card text-center">
+                        <i class="fa-solid fa-globe text-neon-cyan fs-2 mb-2"></i>
+                        <h6 class="text-white m-0">1. Internet</h6>
+                        <small class="text-grey" style="font-size: 0.7rem;">Inbound Packets</small>
+                    </div>
+                </div>
+                <div class="col-1 flow-arrow d-none d-md-flex"><i class="fa-solid fa-chevron-right"></i></div>
+                
+                <div class="col-6 col-md-3 col-lg-2">
+                    <div class="workflow-step-card text-center">
+                        <i class="fa-solid fa-network-wired text-neon-cyan fs-2 mb-2"></i>
+                        <h6 class="text-white m-0">2. Packet Capture</h6>
+                        <small class="text-grey" style="font-size: 0.7rem;">Scapy / Daemon</small>
+                    </div>
+                </div>
+                <div class="col-1 flow-arrow d-none d-lg-flex"><i class="fa-solid fa-chevron-right"></i></div>
+
+                <div class="col-6 col-md-3 col-lg-2">
+                    <div class="workflow-step-card text-center">
+                        <i class="fa-solid fa-filter text-neon-amber fs-2 mb-2"></i>
+                        <h6 class="text-white m-0">3. Rule Engine</h6>
+                        <small class="text-grey" style="font-size: 0.7rem;">DDoS/Scan/Auth</small>
+                    </div>
+                </div>
+                <div class="col-1 flow-arrow d-none d-md-flex"><i class="fa-solid fa-chevron-right"></i></div>
+
+                <div class="col-6 col-md-3 col-lg-2">
+                    <div class="workflow-step-card text-center">
+                        <i class="fa-solid fa-brain text-neon-green fs-2 mb-2"></i>
+                        <h6 class="text-white m-0">4. AI Analysis</h6>
+                        <small class="text-grey" style="font-size: 0.7rem;">Isolation Forest</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3 align-items-center justify-content-center mt-3 font-mono">
+                <div class="col-6 col-md-3 col-lg-2">
+                    <div class="workflow-step-card text-center">
+                        <i class="fa-solid fa-shield-virus text-neon-red fs-2 mb-2"></i>
+                        <h6 class="text-white m-0">5. Firewall Lock</h6>
+                        <small class="text-grey" style="font-size: 0.7rem;">Auto IP Block</small>
+                    </div>
+                </div>
+                <div class="col-1 flow-arrow d-none d-md-flex"><i class="fa-solid fa-chevron-right"></i></div>
+
+                <div class="col-6 col-md-3 col-lg-2">
+                    <div class="workflow-step-card text-center">
+                        <i class="fa-solid fa-database text-neon-blue fs-2 mb-2"></i>
+                        <h6 class="text-white m-0">6. Database</h6>
+                        <small class="text-grey" style="font-size: 0.7rem;">PostgreSQL / Audit</small>
+                    </div>
+                </div>
+                <div class="col-1 flow-arrow d-none d-lg-flex"><i class="fa-solid fa-chevron-right"></i></div>
+
+                <div class="col-6 col-md-3 col-lg-2">
+                    <div class="workflow-step-card text-center">
+                        <i class="fa-solid fa-desktop text-neon-cyan fs-2 mb-2"></i>
+                        <h6 class="text-white m-0">7. SOC Dashboard</h6>
+                        <small class="text-grey" style="font-size: 0.7rem;">Real-time Telemetry</small>
+                    </div>
+                </div>
+                <div class="col-1 flow-arrow d-none d-md-flex"><i class="fa-solid fa-chevron-right"></i></div>
+
+                <div class="col-6 col-md-3 col-lg-2">
+                    <div class="workflow-step-card text-center">
+                        <i class="fa-solid fa-user-shield text-neon-green fs-2 mb-2"></i>
+                        <h6 class="text-white m-0">8. Administrator</h6>
+                        <small class="text-grey" style="font-size: 0.7rem;">SOC Containment</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Deep Architecture & System Features -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <div class="glass-panel p-4 h-100">
+                        <h4 class="text-white font-weight-bold mb-3 d-flex align-items-center gap-2">
+                            <i class="fa-solid fa-layer-group text-neon-cyan"></i> Technology Stack
+                        </h4>
+                        <ul class="list-unstyled text-grey d-flex flex-column gap-3 mb-0 font-mono" style="font-size: 0.9rem;">
+                            <li class="d-flex align-items-center gap-3">
+                                <span class="badge bg-neon-cyan text-dark fw-bold">BACKEND</span>
+                                <span>Python 3.11, Flask 3.0, SQLAlchemy 2.0, Gunicorn WSGI</span>
+                            </li>
+                            <li class="d-flex align-items-center gap-3">
+                                <span class="badge bg-neon-green text-dark fw-bold">MACHINE LEARNING</span>
+                                <span>Scikit-Learn (Isolation Forest), NumPy, Pandas, Joblib</span>
+                            </li>
+                            <li class="d-flex align-items-center gap-3">
+                                <span class="badge bg-neon-blue text-dark fw-bold">DATABASE</span>
+                                <span>PostgreSQL (Production / Render) & SQLite (Local Dev)</span>
+                            </li>
+                            <li class="d-flex align-items-center gap-3">
+                                <span class="badge bg-neon-amber text-dark fw-bold">FRONTEND & 3D</span>
+                                <span>Bootstrap 5, Three.js 3D Globe, Chart.js, Plotly, Custom Cursor</span>
+                            </li>
+                            <li class="d-flex align-items-center gap-3">
+                                <span class="badge bg-neon-red text-dark fw-bold">SECURITY</span>
+                                <span>PyJWT Auth, CSRF Tokens, Rate Limiter, Bcrypt Hashing</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="glass-panel p-4 h-100">
+                        <h4 class="text-white font-weight-bold mb-3 d-flex align-items-center gap-2">
+                            <i class="fa-solid fa-shield-cat text-neon-green"></i> Key System Capabilities
+                        </h4>
+                        <div class="d-flex flex-column gap-3 text-grey" style="font-size: 0.92rem;">
+                            <div>
+                                <h6 class="text-white m-0 font-weight-bold"><i class="fa-solid fa-bolt text-neon-cyan me-2"></i>Multi-Vector Threat Detection</h6>
+                                <p class="m-0 mt-1">Identifies Volumetric DDoS attacks, SYN & UDP Port Scans, SSH/FTP Brute Force sequences, Trojan Backdoor ports, and Zero-Day Anomaly outliers.</p>
+                            </div>
+                            <div>
+                                <h6 class="text-white m-0 font-weight-bold"><i class="fa-solid fa-brain text-neon-green me-2"></i>Unsupervised Machine Learning</h6>
+                                <p class="m-0 mt-1">Trains on packet size, protocol numerical ID, source/destination ports, and arrival time delta to detect unclassified zero-day exploits.</p>
+                            </div>
+                            <div>
+                                <h6 class="text-white m-0 font-weight-bold"><i class="fa-solid fa-ban text-neon-red me-2"></i>Automated Containment</h6>
+                                <p class="m-0 mt-1">Auto-blocks high & critical severity threat IPs with customizable expiration windows and full administrative audit logging.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-4 border-top border-glass text-center text-grey" style="font-size: 0.85rem;">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div>&copy; 2026 SHIELD_IDS Security Operations. All Rights Reserved.</div>
+                <div class="d-flex gap-3 font-mono">
+                    <a href="/" class="text-grey text-decoration-none">Home</a>
+                    <span>•</span>
+                    <a href="/docs" class="text-grey text-decoration-none">Docs</a>
+                    <span>•</span>
+                    <a href="/dashboard" class="text-neon-cyan text-decoration-none">SOC Console</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/cursor.js') }}"></script>
+</body>
+</html>

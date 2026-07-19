@@ -42,8 +42,15 @@ def create_app(config_name=None, config_overrides=None):
     # Store python execution path for dynamic model retraining subprocesses
     app.config['PYTHON_EXECUTABLE'] = sys.executable
 
+    # Ensure instance directory exists for SQLite fallbacks or temporary files
+    try:
+        os.makedirs(app.instance_path, exist_ok=True)
+    except Exception:
+        pass
+
     # Initialize extensions
     db.init_app(app)
+
     mail.init_app(app)
     
     # Register routes blueprints

@@ -13,6 +13,20 @@ def landing_view():
     generate_csrf_token()
     return render_template('landing.html', is_logged_in=('user_id' in session))
 
+@auth_bp.route('/about', methods=['GET'])
+@auth_bp.route('/project', methods=['GET'])
+def about_view():
+    """Renders the project architecture & workflow page."""
+    generate_csrf_token()
+    return render_template('about.html')
+
+@auth_bp.route('/docs', methods=['GET'])
+def docs_view():
+    """Renders system documentation & API reference."""
+    generate_csrf_token()
+    return render_template('docs.html')
+
+
 @auth_bp.route('/login', methods=['GET'])
 def login_view():
     """Renders the HTML login page."""

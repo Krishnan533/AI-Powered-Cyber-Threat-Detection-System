@@ -35,20 +35,34 @@ class Config:
     SEED_DEFAULT_USERS = os.environ.get('SEED_DEFAULT_USERS', 'FALSE').lower() in ('true', '1', 't')
     SEND_EMAIL_NOTIFICATIONS = os.environ.get('SEND_EMAIL_NOTIFICATIONS', 'TRUE').lower() in ('true', '1', 't')
 
-def get_database_uri(default_uri='sqlite:///network_monitor.db'):
-    db_uri = os.environ.get('DATABASE_URL', default_uri)
-    if db_uri and db_uri.startswith('postgres://'):
-        db_uri = db_uri.replace('postgres://', 'postgresql://', 1)
-    return db_uri
+def get_database_uri():
+    db_uri = os.environ.get('DATABASE_URL')
+    if db_uri and db_uri.strip():
+        db_uri = db_uri.strip()
+        if db_uri.startswith('postgres://'):
+            db_uri = db_uri.replace('postgres://', 'postgresql://', 1)
+        return db_uri
+
+    # Local development SQLite fallback with absolute path ensuring directory exists
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    instance_dir = os.path.join(base_dir, 'instance')
+    try:
+        os.makedirs(instance_dir, exist_ok=True)
+        db_path = os.path.join(instance_dir, 'network_monitor.db')
+    except Exception:
+        db_path = '/tmp/network_monitor.db'
+
+    return f"sqlite:///{db_path}"
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = get_database_uri('sqlite:///network_monitor.db')
+    SQLALCHEMY_DATABASE_URI = get_database_uri()
 
 class ProductionConfig(Config):
     DEBUG = False
-    SQLALCHEMY_DATABASE_URI = get_database_uri('sqlite:///network_monitor.db')
+    SQLALCHEMY_DATABASE_URI = get_database_uri()
     SESSION_COOKIE_SECURE = True  # Enforce secure cookies in production
+
 
 class TestingConfig(Config):
     TESTING = True
