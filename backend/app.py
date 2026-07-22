@@ -274,8 +274,9 @@ def create_app(config_name=None, config_overrides=None):
 
     return app
 
-# Main execution entrypoint
+# Expose module-level app instance for WSGI production servers (Gunicorn, Render, Docker)
+app = create_app()
+
 if __name__ == '__main__':
-    app = create_app()
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
